@@ -105,12 +105,10 @@ export default function Login() {
         }
         // 调用登录接口
         api.login({
-            username: formData.username,
+            name: formData.username,
             phone: formData.phone,
             code: formData.verifyCode
         }).then(res => {
-            // 保存token
-            Taro.setStorageSync('token', res.token);
             Taro.showToast({
                 title: '登录成功',
                 icon: 'success',

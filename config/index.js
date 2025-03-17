@@ -34,6 +34,7 @@ resolve: {
         path.join(__dirname, 'node_modules')
     ]
 },
+  
   mini: {
     postcss: {
       pxtransform: {
