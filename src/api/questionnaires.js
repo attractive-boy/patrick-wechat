@@ -1,7 +1,3 @@
-
-import { BASE_API_URL } from '../constants/common'
-import Taro from '@tarojs/taro';
-
 export default {
   fetchQuestionnaires: async () => {
     const data = [
@@ -281,51 +277,5 @@ export default {
       content: 'You have completed the questionnaire',
     };
     return new Promise(resolve => setTimeout(() => resolve(result), 1000));
-  },
-  login: async ({ phone, code, name }) => {
-    try {
-      const response = await Taro.request({
-        url: `${BASE_API_URL}/user/login`,
-        method: 'POST',
-        header: {
-          'Content-Type': 'application/json'
-        },
-        data: { phone, code, name }
-      });
-      const { data } = response;
-      if (!data.success) {
-        throw new Error(data.message || '登录失败');
-      }
-      // 存储token和用户信息
-      if (data.token) {
-        console.log('登录成功:',data.token);
-        Taro.setStorageSync('token', data.token);
-        Taro.setStorageSync('userInfo', data.data);
-      }
-      return data;
-    } catch (error) {
-      console.error('登录失败:', error);
-      throw error;
-    }
-  },
-  phone_code: async(phone) => {
-    try {
-      const response = await Taro.request({
-        url: `${BASE_API_URL}/verification/verification/code/send`,
-        method: 'POST',
-        header: {
-          'Content-Type': 'application/json'
-        },
-        data: { phone }
-      });
-      const data = response.data;
-      if (!data.success) {
-        throw new Error(data.message || '发送验证码失败');
-      }
-      return data;
-    } catch (error) {
-      console.error('发送验证码失败:', error);
-      throw error;
-    }
   }
 }

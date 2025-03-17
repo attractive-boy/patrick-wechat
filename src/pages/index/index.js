@@ -14,7 +14,25 @@ export default function Index() {
   const checkToken = () => {
     const token = Taro.getStorageSync('token');
     if (!token) {
-      Taro.navigateTo({ url: '/pages/login/index' });
+      Taro.redirectTo({ url: '/pages/login/index' });
+    }
+
+    const userInfo = Taro.getStorageSync('userInfo');
+    if (!userInfo.profilePath) {
+      Taro.navigateTo({
+        url: '/pages/upload/index',
+        success: () => {
+          console.log('导航成功');
+        },
+        fail: (err) => {
+          console.error('导航失败:', err);
+          Taro.showToast({
+            title: '页面跳转失败，请重试',
+            icon: 'none',
+            duration: 2000
+          });
+        }
+      });
     }
   };
 
@@ -57,16 +75,16 @@ export default function Index() {
     <View className='page'>
       <View className='doc-body bg'>
         <View className='panel'>
-          <View className='panel__title'>问卷列表</View>
+          <View className=''>问卷列表</View>
           <View className='panel__content no-padding'>
             <View className='example-item list'>
               {loading ? (
                 <AtActivityIndicator mode='center' />
               ) : (
-                  <AtList>
-                    {questionnaireList}
-                  </AtList>
-                )
+                <AtList>
+                  {questionnaireList}
+                </AtList>
+              )
               }
             </View>
           </View>

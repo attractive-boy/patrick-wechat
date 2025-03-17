@@ -3,7 +3,7 @@ import Taro from '@tarojs/taro';
 import { View, Text, Input, Image } from '@tarojs/components';
 import { AtInput, AtButton, AtForm } from 'taro-ui';
 import './index.scss';
-import api from '../../api/questionnaires';
+import { BASE_API_URL } from '../../constants/common'
 
 export default function Login() {
     const [formData, setFormData] = useState({
@@ -46,6 +46,53 @@ export default function Login() {
 
     const [countdown, setCountdown] = useState(0);
 
+    const login = async ({ phone, code, name }) => {
+        try {
+            const response = await Taro.request({
+                url: `${BASE_API_URL}/user/login`,
+                method: 'POST',
+                header: {
+                    'Content-Type': 'application/json'
+                },
+                data: { phone, code, name }
+            });
+            const { data } = response;
+            if (!data.success) {
+                throw new Error(data.message || '登录失败');
+            }
+            // 存储token和用户信息
+            if (data.data.token) {
+                console.log('登录成功:', data.data.token);
+                Taro.setStorageSync('token', data.data.token);
+                Taro.setStorageSync('userInfo', data.data);
+            }
+            return data;
+        } catch (error) {
+            console.error('登录失败:', error);
+            throw error;
+        }
+    }
+    const phone_code = async (phone) => {
+        try {
+            const response = await Taro.request({
+                url: `${BASE_API_URL}/verification/verification/code/send`,
+                method: 'POST',
+                header: {
+                    'Content-Type': 'application/json'
+                },
+                data: { phone }
+            });
+            const data = response.data;
+            if (!data.success) {
+                throw new Error(data.message || '发送验证码失败');
+            }
+            return data;
+        } catch (error) {
+            console.error('发送验证码失败:', error);
+            throw error;
+        }
+    }
+
     useEffect(() => {
         let timer;
         if (countdown > 0) {
@@ -74,7 +121,7 @@ export default function Login() {
             return;
         }
         // 调用获取验证码接口
-        api.phone_code(formData.phone).then(() => {
+        phone_code(formData.phone).then(() => {
             Taro.showToast({
                 title: '验证码已发送',
                 icon: 'success'
@@ -104,7 +151,7 @@ export default function Login() {
             return;
         }
         // 调用登录接口
-        api.login({
+        login({
             name: formData.username,
             phone: formData.phone,
             code: formData.verifyCode
@@ -115,20 +162,39 @@ export default function Login() {
                 duration: 1500
             });
             setTimeout(() => {
-                Taro.redirectTo({
-                    url: '/pages/index/index',
-                    success: () => {
-                        console.log('导航成功');
-                    },
-                    fail: (err) => {
-                        console.error('导航失败:', err);
-                        Taro.showToast({
-                            title: '页面跳转失败，请重试',
-                            icon: 'none',
-                            duration: 2000
-                        });
-                    }
-                });
+                const userInfo = Taro.getStorageSync('userInfo');
+                if (!userInfo.profilePath) {
+                    Taro.navigateTo({
+                        url: '/pages/upload/index',
+                        success: () => {
+                            console.log('导航成功');
+                        },
+                        fail: (err) => {
+                            console.error('导航失败:', err);
+                            Taro.showToast({
+                                title: '页面跳转失败，请重试',
+                                icon: 'none',
+                                duration: 2000
+                            });
+                        }
+                    });
+                } else {
+                    Taro.navigateTo({
+                        url: '/pages/index/index',
+                        success: () => {
+                            console.log('导航成功');
+                        },
+                        fail: (err) => {
+                            console.error('导航失败:', err);
+                            Taro.showToast({
+                                title: '页面跳转失败，请重试',
+                                icon: 'none',
+                                duration: 2000
+                            });
+                        }
+                    });
+                }
+
             }, 1500);
         }).catch(error => {
             Taro.showToast({
@@ -136,7 +202,7 @@ export default function Login() {
                 icon: 'none'
             });
         });
-        
+
     };
 
     return (
@@ -169,7 +235,7 @@ export default function Login() {
                             />
                         </View>
                         <Input></Input>
-                        <View style={{position:'relative'}}>
+                        <View style={{ position: 'relative' }}>
                             <View style={{
                                 width: '40rpx',
                                 height: '40rpx',
@@ -200,7 +266,7 @@ export default function Login() {
                                 onChange={value => handleChange(value, 'username')}
                             />
                         </View>
-                        <View style={{position:'relative'}}>
+                        <View style={{ position: 'relative' }}>
                             <View style={{
                                 width: '40rpx',
                                 height: '40rpx',
@@ -231,7 +297,7 @@ export default function Login() {
                                 onChange={value => handleChange(value, 'phone')}
                             />
                         </View>
-                        <View className='verify-code-container' style={{position:'relative'}}>
+                        <View className='verify-code-container' style={{ position: 'relative' }}>
                             <View style={{
                                 width: '40rpx',
                                 height: '40rpx',
@@ -261,9 +327,9 @@ export default function Login() {
                                 value={formData.verifyCode}
                                 onChange={value => handleChange(value, 'verifyCode')}
                             />
-                            <AtButton 
-                                className='verify-code-btn' 
-                                onClick={handleGetVerifyCode} 
+                            <AtButton
+                                className='verify-code-btn'
+                                onClick={handleGetVerifyCode}
                                 disabled={countdown > 0}
                                 style={{
                                     backgroundColor: countdown > 0 ? '#80D1FF' : '#09A3FF',
@@ -276,35 +342,35 @@ export default function Login() {
                             </AtButton>
                         </View>
                         <View className='login-btn-container'>
-                            
+
                             <AtButton type='primary' className='login-btn' onClick={handleLogin}>一键登录</AtButton>
                         </View>
-                        <View className='agreement-container' style={{ width:'100%', padding: '20rpx 30rpx', display: 'flex', alignItems: 'center',justifyContent:'center' }}>
-                                <View 
-                                    style={{ 
-                                        width: '40rpx', 
-                                        height: '40rpx', 
-                                        border: '1px solid #ddd',
-                                        borderRadius: '4px',
-                                        backgroundColor: formData.agreement ? '#09A3FF' : '#fff',
-                                        display: 'flex',
-                                        justifyContent: 'center',
-                                        alignItems: 'center',
-                                        marginRight: '10rpx'
-                                    }}
-                                    onClick={() => handleChange(!formData.agreement, 'agreement')}
-                                >
-                                    {formData.agreement && (
-                                        <Text style={{ color: '#fff', fontSize: '24rpx' }}>✓</Text>
-                                    )}
-                                </View>
-                                <Text style={{ fontSize: '24rpx', color: '#666' }}>
-                                    我已阅读并同意
-                                    <Text style={{ color: '#09A3FF' }}>《用户服务协议》</Text>
-                                    和
-                                    <Text style={{ color: '#09A3FF' }}>《隐私政策》</Text>
-                                </Text>
+                        <View className='agreement-container' style={{ width: '100%', padding: '20rpx 30rpx', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <View
+                                style={{
+                                    width: '40rpx',
+                                    height: '40rpx',
+                                    border: '1px solid #ddd',
+                                    borderRadius: '4px',
+                                    backgroundColor: formData.agreement ? '#09A3FF' : '#fff',
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    marginRight: '10rpx'
+                                }}
+                                onClick={() => handleChange(!formData.agreement, 'agreement')}
+                            >
+                                {formData.agreement && (
+                                    <Text style={{ color: '#fff', fontSize: '24rpx' }}>✓</Text>
+                                )}
                             </View>
+                            <Text style={{ fontSize: '24rpx', color: '#666' }}>
+                                我已阅读并同意
+                                <Text style={{ color: '#09A3FF' }}>《用户服务协议》</Text>
+                                和
+                                <Text style={{ color: '#09A3FF' }}>《隐私政策》</Text>
+                            </Text>
+                        </View>
                     </View>
                 </View>
             </View>

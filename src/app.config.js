@@ -4,7 +4,8 @@ export default {
     'pages/introduce/index',
     'pages/questionnaire/index',
     'pages/login/index',
-    'pages/result/index'
+    'pages/result/index',
+    'pages/upload/index'
   ],
   window: {
     backgroundTextStyle: 'dark',
