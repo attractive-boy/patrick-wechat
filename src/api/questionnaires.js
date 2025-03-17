@@ -1,5 +1,9 @@
+<<<<<<< HEAD
 import { BASE_API_URL } from '../constants/common'
 import Taro from '@tarojs/taro';
+=======
+// import { BASE_API_URL } from '../constants/common'
+>>>>>>> b228b369aee5c8113ad5fefa0b29f7096d6a0531
 
 export default {
   fetchQuestionnaires: async () => {
@@ -7,7 +11,11 @@ export default {
       {
         id: 1,
         title: '唐诗宋词三百首',
+<<<<<<< HEAD
         description: '“唐诗宋词”一语，是唐诗与宋词的并称，唐诗与宋词是中国文学史上的两颗明珠，唐代被称为诗的时代，宋代被称为词的时代。词源于民间，始于唐，兴于五代，盛于两宋。宋代物质生活的丰富，人们对文化生活的追求更加强烈。 唐代的诗人多是供皇室及其统治者御用的工具和玩物。宋代的词人已由被别人欣赏而一跃登上了政治舞台，成为宋代政治舞台上的主角。宋代，皇帝个个爱词，大臣个个是词人，政治家范仲淹、王安石、司马光、苏轼等都是著名词人，女词人李清照也成为一代词宗，名垂千古。全社会的认同和推崇，使宋词得以佳篇迭出，影响久远。',
+=======
+        description: '“唐诗宋词”一语，是唐诗与宋词的并称，唐诗与宋词是中国文学史上的两颗明珠，唐代被称为诗的时代，宋代被称为词的时代。词源于民间，始于唐，兴于五代，盛于两宋。宋代物质生活的丰富，人们对文化生活的追求也更加强烈。 唐代的诗人多是供皇室及其统治者御用的工具和玩物。宋代的词人已由被别人欣赏而一跃登上了政治舞台，成为宋代政治舞台上的主角。宋代，皇帝个个爱词，大臣个个是词人，政治家范仲淹、王安石、司马光、苏轼等都是著名词人，女词人李清照也成为一代词宗，名垂千古。全社会的认同和推崇，使宋词得以佳篇迭出，影响久远。',
+>>>>>>> b228b369aee5c8113ad5fefa0b29f7096d6a0531
         duration: 5,
         imageUrl: 'https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=1393093974,2959754031&fm=26&gp=0.jpg',
         questions: [
@@ -280,6 +288,7 @@ export default {
       content: 'You have completed the questionnaire',
     };
     return new Promise(resolve => setTimeout(() => resolve(result), 1000));
+<<<<<<< HEAD
   },
   login: async ({ phone, code, name }) => {
     try {
@@ -325,5 +334,7 @@ export default {
       console.error('发送验证码失败:', error);
       throw error;
     }
+=======
+>>>>>>> b228b369aee5c8113ad5fefa0b29f7096d6a0531
   }
 }
