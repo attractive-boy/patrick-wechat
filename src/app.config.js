@@ -1,11 +1,13 @@
 export default {
   pages: [
+    
     'pages/index/index',
     'pages/introduce/index',
     'pages/questionnaire/index',
     'pages/login/index',
     'pages/result/index',
-    'pages/upload/index'
+    'pages/upload/index',
+    
   ],
   window: {
     backgroundTextStyle: 'dark',

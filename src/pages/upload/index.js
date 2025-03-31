@@ -3,6 +3,7 @@ import Taro from '@tarojs/taro';
 import { View, Text, Image } from '@tarojs/components';
 import { AtInput, AtButton, AtRadio, AtImagePicker } from 'taro-ui';
 import './index.scss';
+import api from '../../api/questionnaires';
 
 export default function Upload() {
     const [formData, setFormData] = useState({
@@ -30,6 +31,59 @@ export default function Upload() {
         setWindowInfo({
             windowHeight: windowInfo.windowHeight
         });
+
+        // 获取用户信息
+        const token = Taro.getStorageSync('token');
+        if (token) {
+            Taro.request({
+                url: `${Taro.requestUrl}/user/query-user-info`,
+                method: 'GET',
+                header: {
+                    'token': token
+                },
+                success: (res) => {
+                    if (res.data.success && res.data.data) {
+                        const userInfo = res.data.data;
+                        // 生成临时编码用于图片签名
+                        Taro.request({
+                            url: `${Taro.requestUrl}/user/generateTempCode`,
+                            method: 'GET',
+                            header: {
+                                'token': token
+                            },
+                            success: (codeRes) => {
+                                if (codeRes.data.success && codeRes.data.data) {
+                                    const tempCode = codeRes.data.data;
+                                    // 处理图片路径，添加临时编码签名
+                                    const profilePath = userInfo.profilePath ? 
+                                        `${Taro.requestUrl}/user/diagnosisBook/${tempCode}` : null;
+                                    
+                                    setFormData(prev => ({
+                                        childName: userInfo.name || '',
+                                        ageGroup: userInfo.ageGroup === '1' ? '3-7' : '7-12',
+                                        username: userInfo.parentName || '',
+                                        diagnosisImage: profilePath ? [profilePath] : []
+                                    }));
+                                }
+                            },
+                            fail: (error) => {
+                                console.error('获取临时编码失败:', error);
+                                // 即使获取临时编码失败，也设置基本信息
+                                setFormData(prev => ({
+                                    childName: userInfo.name || '',
+                                    ageGroup: userInfo.ageGroup === '1' ? '3-7' : '7-12',
+                                    username: userInfo.parentName || '',
+                                    diagnosisImage: userInfo.profilePath ? [userInfo.profilePath] : []
+                                }));
+                            }
+                        });
+                    }
+                },
+                fail: (error) => {
+                    console.error('获取用户信息失败:', error);
+                }
+            });
+        }
     }, []);
 
     const contentHeight = windowInfo.windowHeight - (menuButtonInfo.top + menuButtonInfo.height + 40);
@@ -65,6 +119,13 @@ export default function Upload() {
 
     const handleSubmit = () => {
         if (!formData.username) {
+            Taro.showToast({
+                title: '请输入家长姓名',
+                icon: 'none'
+            });
+            return;
+        }
+        if (!formData.childName) {
             Taro.showToast({
                 title: '请输入幼儿姓名',
                 icon: 'none'
