@@ -1,15 +1,21 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Taro, { usePullDownRefresh, useShareAppMessage } from '@tarojs/taro';
 import { View, Image, Text } from '@tarojs/components';
-import { AtButton, AtListItem, AtActivityIndicator } from 'taro-ui';
+import { AtButton, AtListItem, AtActivityIndicator, AtCurtain } from 'taro-ui';
 import { fetchQuestionnaires } from '../../actions/questionnaires';
 import './index.scss';
+import { VIEW } from '@tarojs/runtime';
 
 export default function Index() {
+  const [isOpened, setIsOpened] = useState(true);
   const dispatch = useDispatch();
   const questionnaires = useSelector(state => state.questionnaires.list);
   const loading = useSelector(state => state.questionnaires.loading);
+
+  const handleClose = () => {
+    setIsOpened(false);
+  };
 
   const checkToken = async () => {
     const token = Taro.getStorageSync('token');
@@ -144,6 +150,58 @@ export default function Index() {
           </View>
         </View>
       </View>
+      <AtCurtain
+        isOpened={isOpened}
+        onClose={handleClose}
+        className={'myAtCurtain'}
+      >
+        <>
+          <View
+            style={{
+              backgroundImage: 'url(https://test.djjp.cn/index_xin.png)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat',
+              margin: '0 auto',
+              width: '90vw',
+              height: '140vw',
+              lineHeight: '1.6',
+              textAlign: 'justify',
+              fontSize: '30rpx',
+              color: 'rgba(34, 34, 34, 0.8)',
+              padding: '7vw',
+              paddingTop: '10vw',
+              position: 'relative',
+            }}
+          >
+            <View style={{ marginBottom: '10rpx' }}>亲爱的家长：</View>
+            
+            <View style={{ textIndent: '2em' }}>
+              非常感谢您参加孤独症诺系儿童症状和基本能力的调查！该调查可以帮助您了解孩子的目前症状或干预改善的进阶情况。您如实、认真地回答有助于全面了解孩子社交力、受限与重复行为、学习力、情绪力、生活自理力和运动力。
+            </View>
+            
+            <View style={{ textIndent: '2em', marginTop: '20rpx' }}>
+              该测评可以反映孩子的优势和不足，测评后的干预建议则可为您后续针对性干预提供参考。测评结果的准确性和可靠性取决于您（最熟悉孩子的家长填写）是否遵循要求认真如实完成所有作答。
+            </View>
+
+            <View style={{fontSize:'large',fontWeight:'bolder',width:'calc(90vw - 14vw)',textAlign:'center',position:'absolute',bottom:'5%'}}> 致家长的一封信 </View>
+          </View>
+          <View className='button-container' style={{
+            margin:"15vw",
+            marginTop:"30rpx",
+          }}>
+            <AtButton type='primary' className='start-btn' onClick={handleInfoPut}>维护基本信息</AtButton>
+          </View>
+        </>
+      </AtCurtain> 
     </View>
   )
 }
+
+const handleClose = () => {
+  setIsOpened(false);
+};
+
+const handleInfoPut = () => {
+  Taro.navigateTo({ url: '/pages/baseInfo/index' });
+};

@@ -7,6 +7,7 @@ export default {
     'pages/login/index',
     'pages/result/index',
     'pages/upload/index',
+    'pages/baseInfo/index'
     
   ],
   window: {
