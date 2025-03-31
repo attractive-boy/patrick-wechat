@@ -3,13 +3,13 @@ import Taro from '@tarojs/taro';
 import { View, Text, Image } from '@tarojs/components';
 import { AtInput, AtButton, AtRadio, AtImagePicker } from 'taro-ui';
 import './index.scss';
-import api from '../../api/questionnaires';
 
 export default function Upload() {
     const [formData, setFormData] = useState({
-        childName: '',
+        parentName: '',
         ageGroup: '3-7',
-        diagnosisImage: []
+        diagnosisImage: '',
+        fileName: ''
     });
 
     const [menuButtonInfo, setMenuButtonInfo] = useState({
@@ -59,9 +59,9 @@ export default function Upload() {
                                         `${Taro.requestUrl}/user/diagnosisBook/${tempCode}` : null;
                                     
                                     setFormData(prev => ({
-                                        childName: userInfo.name || '',
+                                        fileName: userInfo.profilePath || '',
                                         ageGroup: userInfo.ageGroup === '1' ? '3-7' : '7-12',
-                                        username: userInfo.parentName || '',
+                                        parentName: userInfo.parentName || '',
                                         diagnosisImage: profilePath ? [profilePath] : []
                                     }));
                                 }
@@ -70,9 +70,9 @@ export default function Upload() {
                                 console.error('获取临时编码失败:', error);
                                 // 即使获取临时编码失败，也设置基本信息
                                 setFormData(prev => ({
-                                    childName: userInfo.name || '',
+                                    fileName: userInfo.profilePath || '',
                                     ageGroup: userInfo.ageGroup === '1' ? '3-7' : '7-12',
-                                    username: userInfo.parentName || '',
+                                    parentName: userInfo.parentName || '',
                                     diagnosisImage: userInfo.profilePath ? [userInfo.profilePath] : []
                                 }));
                             }
@@ -89,36 +89,78 @@ export default function Upload() {
     const contentHeight = windowInfo.windowHeight - (menuButtonInfo.top + menuButtonInfo.height + 40);
 
     const handleChange = (value, field) => {
-        setFormData(prev => ({
-            ...prev,
-            [field]: value
-        }));
+        if (field === 'diagnosisImage' && value) {
+            console.log('diagnosisImage changed:', value);
+            // 立即处理图片上传
+            const token = Taro.getStorageSync('token');
+            if (!token) {
+                Taro.showToast({
+                    title: '未登录，请先登录',
+                    icon: 'none'
+                });
+                return;
+            }
+
+            Taro.showLoading({
+                title: '正在上传...',
+                mask: true
+            });
+
+            Taro.uploadFile({
+                url: `${Taro.requestUrl}/user/profile-file-upload`,
+                filePath: value.path,
+                name: 'file',
+                header: {
+                    'token': token
+                },
+                success: (res) => {
+                    try {
+                        const data = JSON.parse(res.data);
+                        console.log('Upload response:', data);
+                        if (data.success) {
+                            setFormData(prev => ({
+                                ...prev,
+                                diagnosisImage: value.path,
+                                fileName: data.data
+                            }));
+                            Taro.showToast({
+                                title: '上传成功',
+                                icon: 'success'
+                            });
+                        } else {
+                            Taro.showToast({
+                                title: data.message || '上传失败',
+                                icon: 'none'
+                            });
+                        }
+                    } catch (e) {
+                        Taro.showToast({
+                            title: '服务器响应格式错误',
+                            icon: 'none'
+                        });
+                    }
+                },
+                fail: (error) => {
+                    Taro.showToast({
+                        title: error.errMsg || '上传失败',
+                        icon: 'none'
+                    });
+                },
+                complete: () => {
+                    Taro.hideLoading();
+                }
+            });
+        } else {
+            setFormData(prev => ({
+                ...prev,
+                [field]: value
+            }));
+        }
         return value;
     };
 
-    const handleUploadImage = () => {
-        Taro.chooseImage({
-            count: 1,
-            sizeType: ['compressed'],
-            sourceType: ['album', 'camera'],
-            success: function (res) {
-                const tempFilePath = res.tempFilePaths[0];
-                setFormData(prev => ({
-                    ...prev,
-                    diagnosisImage: tempFilePath
-                }));
-            },
-            fail: function () {
-                Taro.showToast({
-                    title: '选择图片失败',
-                    icon: 'none'
-                });
-            }
-        });
-    };
-
     const handleSubmit = () => {
-        if (!formData.username) {
+        if (!formData.parentName) {
             Taro.showToast({
                 title: '请输入家长姓名',
                 icon: 'none'
@@ -134,92 +176,54 @@ export default function Upload() {
             return;
         }
 
-        // 创建上传任务队列
-        const uploadTasks = formData.diagnosisImage.map(image => {
-            return new Promise((resolve, reject) => {
-                const token = Taro.getStorageSync('token');
-                if (!token) {
-                    reject(new Error('未登录，请先登录'));
-                    return;
-                }
-                Taro.uploadFile({
-                    url: `${Taro.requestUrl}/user/profile-file-upload`,
-                    filePath: image,
-                    name: 'file',
-                    header: {
-                        'token': token
-                    },
-                    success: (res) => {
-                        try {
-                            const data = JSON.parse(res.data);
-                            if (data.success) {
-                                resolve(data);
-                            } else {
-                                reject(new Error(data.message || '上传失败'));
-                            }
-                        } catch (e) {
-                            reject(new Error('服务器响应格式错误'));
-                        }
-                    },
-                    fail: (error) => {
-                        reject(new Error(error.errMsg || '上传失败'));
-                    }
-                });
-            });
-        });
-
-        // 执行所有上传任务
-        Promise.all(uploadTasks)
-            .then((results) => {
-                // 获取上传成功后的文件名
-                const profileFileName = results[0].data;
-                
-                // 提交个人信息和年龄段
-                const token = Taro.getStorageSync('token');
-                Taro.request({
-                    url: `${Taro.requestUrl}/user/submit-profile-and-agegroup`,
-                    method: 'POST',
-                    header: {
-                        'Content-Type': 'application/json',
-                        'token': token
-                    },
-                    data: {
-                        profileFileName: profileFileName,
-                        ageGroup: formData.ageGroup === '3-7'? 1 : 2
-                    },
-                    success: (res) => {
-                        if (res.data.success) {
-                            Taro.showToast({
-                                title: '提交成功',
-                                icon: 'success',
-                                duration: 1500
-                            });
-                            setTimeout(() => {
-                                Taro.redirectTo({
-                                    url: '/pages/index/index'
-                                });
-                            }, 1500);
-                        } else {
-                            Taro.showToast({
-                                title: res.data.message || '提交失败',
-                                icon: 'none'
-                            });
-                        }
-                    },
-                    fail: () => {
+       
+        
+        // 提交个人信息和年龄段
+        const token = Taro.getStorageSync('token');
+        Taro.request({
+            url: `${Taro.requestUrl}/user/submit-profile-and-agegroup`,
+            method: 'POST',
+            header: {
+                'Content-Type': 'application/json',
+                'token': token
+            },
+            data: {
+                profileFileName: formData.fileName,
+                ageGroup: formData.ageGroup === '3-7'? 1 : 2,
+                parentName: formData.parentName
+            },
+            success: (res) => {
+                if (res.data.success) {
+                    Taro.showToast({
+                        title: '提交成功',
+                        icon: 'success',
+                        duration: 1500
+                    });
+                    setTimeout(() => {
+                        // Taro.redirectTo({
+                        //     url: '/pages/index/index'
+                        // });
+                        //提示审核中，不要跳转页面
                         Taro.showToast({
-                            title: '提交失败，请重试',
-                            icon: 'none'
+                            title: '审核中',
+                            icon:'none',
+                            duration: 1500
                         });
-                    }
-                });
-            })
-            .catch(() => {
+                    }, 1500);
+                } else {
+                    Taro.showToast({
+                        title: res.data.message || '提交失败',
+                        icon: 'none'
+                    });
+                }
+            },
+            fail: () => {
                 Taro.showToast({
-                    title: '上传失败，请重试',
+                    title: '提交失败，请重试',
                     icon: 'none'
                 });
-            });
+            }
+        });
     };
 
     return (
@@ -275,11 +279,24 @@ export default function Upload() {
                             </View>
                             <View>
                                 <AtImagePicker
-                                    files={formData.diagnosisImage.map(url => ({ url }))}
+                                    files={formData.diagnosisImage ? [{ url: formData.diagnosisImage }] : []}
+                                    count={1}
+                                    showAddBtn={formData.diagnosisImage.length < 1}
                                     onChange={(files) => {
-                                        handleChange(files.map(file => file.url), 'diagnosisImage');
+                                        setFormData(prev => ({
+                                            ...prev,
+                                            diagnosisImage: ''
+                                        }));
+                                        console.log(files);
+                                        const isAddOperation = files.length > 0;
+                                        console.log(isAddOperation ? '新增图片' : '删除图片');
+                                        if (isAddOperation) {
+                                            setTimeout(() => {
+                                                handleChange(files[files.length - 1].file, 'diagnosisImage');
+                                            }, 0);
+                                        }
                                     }}
-                                    multiple={true}
+                                    multiple={false}
                                     style={{
                                         width: '100%',
                                         height: 'auto',
@@ -304,13 +321,13 @@ export default function Upload() {
                             </View>
                             <View style={{ position: 'relative' }}>
                                 <AtInput
-                                    name='username'
+                                    name='parentName'
                                     title='用户名'
                                     type='text'
                                     cursor={-1}
                                     placeholder='请输入家长姓名'
-                                    value={formData.username}
-                                    onChange={value => handleChange(value, 'username')}
+                                    value={formData.parentName}
+                                    onChange={value => handleChange(value, 'parentName')}
                                 />
                             </View>
 

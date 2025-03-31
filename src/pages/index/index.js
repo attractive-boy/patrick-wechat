@@ -59,6 +59,16 @@ export default function Index() {
           Taro.redirectTo({ url: '/pages/login/index' });
         }, 2000);
         return;
+      }else if (userInfo.processStatus === '2') {
+        Taro.showToast({
+          title: '资料审核中',
+          icon: 'none',
+          duration: 2000
+        });
+        setTimeout(() => {
+          Taro.redirectTo({ url: '/pages/upload/index' });
+        }, 2000);
+        return;
       }
     } catch (error) {
       console.error('获取用户信息失败:', error);
@@ -68,6 +78,7 @@ export default function Index() {
       });
       Taro.redirectTo({ url: '/pages/login/index' });
     }
+    fetchDataCallback();
   };
 
   const fetchData = async () => {
@@ -80,7 +91,7 @@ export default function Index() {
 
   useEffect(() => {
     checkToken();
-    fetchDataCallback();
+    
   }, [fetchDataCallback]);
 
   usePullDownRefresh(async () => {
