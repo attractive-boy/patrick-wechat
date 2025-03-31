@@ -125,13 +125,7 @@ export default function Upload() {
             });
             return;
         }
-        if (!formData.childName) {
-            Taro.showToast({
-                title: '请输入幼儿姓名',
-                icon: 'none'
-            });
-            return;
-        }
+
         if (formData.diagnosisImage.length === 0) {
             Taro.showToast({
                 title: '请上传诊断书',
@@ -191,7 +185,7 @@ export default function Upload() {
                     },
                     data: {
                         profileFileName: profileFileName,
-                        ageGroup: formData.ageGroup
+                        ageGroup: formData.ageGroup === '3-7'? 1 : 2
                     },
                     success: (res) => {
                         if (res.data.success) {
