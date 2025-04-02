@@ -19,13 +19,45 @@
   margin-bottom: 18px;
   border-radius: 16px;
   box-shadow: -4px 4px 8px rgba(0, 0, 0, .15);
+  height: 80vh;
   .title {
     font-size: 32px;
     padding: 24px;
     font-weight: bold;
   }
   .question {
-    margin-top: 12px;
-    padding: 24px 2px;
+    margin: 20px 0;
+    .taroify-radio {
+      margin: 24px 0;
+      padding: 20px;
+      background-color: #f8f8f8;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      &:hover {
+        background-color: #f0f0f0;
+        transform: translateY(-2px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+    }
   }
+}
+
+.onelinebtn {
+  width: 80vw;
+  height: 88px;
+  line-height: 88px;
+  font-size: 32px;
+  border-radius: 44px;
+  border: none;
+  background: linear-gradient(to right, #B2E5FB, #09A3FF );
+}
+
+.halflinebtn{
+  width: 40vw;
+  height: 88px;
+  line-height: 88px;
+  font-size: 32px;
+  border-radius: 44px;
+  border: none;
+  background: linear-gradient(to right, #B2E5FB, #09A3FF );
 }

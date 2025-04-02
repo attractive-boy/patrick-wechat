@@ -12,6 +12,7 @@ export default function Index() {
   const dispatch = useDispatch();
   const questionnaires = useSelector(state => state.questionnaires.list);
   const loading = useSelector(state => state.questionnaires.loading);
+  const [showInfoPutBtn, setShowInfoPutBtn] = useState(true);
 
   const handleClose = () => {
     setIsOpened(false);
@@ -40,6 +41,12 @@ export default function Index() {
 
       const userInfo = data.data;
       Taro.setStorageSync('userInfo', userInfo);
+
+      if(userInfo.ageDiagnosis && userInfo.birthday && userInfo.diagnosis && userInfo.diagnosisResult && userInfo.sex){
+        setShowInfoPutBtn(false);
+      }else{
+        setShowInfoPutBtn(true);
+      }
 
       // 检查用户状态
       if (userInfo.processStatus === '1' || !userInfo.profilePath) {
@@ -153,7 +160,7 @@ export default function Index() {
       <AtCurtain
         isOpened={isOpened}
         onClose={handleClose}
-        className={'myAtCurtain'}
+        className={ showInfoPutBtn ? 'myAtCurtain' : null}
       >
         <>
           <View
@@ -186,12 +193,12 @@ export default function Index() {
 
             <View style={{fontSize:'large',fontWeight:'bolder',width:'calc(90vw - 14vw)',textAlign:'center',position:'absolute',bottom:'5%'}}> 致家长的一封信 </View>
           </View>
-          <View className='button-container' style={{
+          {showInfoPutBtn ? <View className='button-container' style={{
             margin:"15vw",
             marginTop:"30rpx",
           }}>
             <AtButton type='primary' className='start-btn' onClick={handleInfoPut}>维护基本信息</AtButton>
-          </View>
+          </View> : null}
         </>
       </AtCurtain> 
     </View>

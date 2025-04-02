@@ -3,6 +3,8 @@ import {
   RECEIVE_QUESTIONNAIRES,
   ANSWER_QUESTION,
   RECEIVE_QUESTIONNAIRE_RESULT,
+  START_ASSESSMENT,
+  RECEIVE_ASSESSMENT,
 } from '../constants/actionType';
 import api from '../api/questionnaires';
 
@@ -15,6 +17,17 @@ const receiveQuestionnaires = data => ({
   type: RECEIVE_QUESTIONNAIRES,
   payload: data,
 });
+
+// start assessment
+const receiveAssessment = data => ({
+  type: RECEIVE_ASSESSMENT,
+  payload: data,
+});
+
+export const startAssessment = (id) => async dispatch => {
+  const response = await api.startAssessment(id);
+  return dispatch(receiveAssessment(response));
+};
 
 export const fetchQuestionnaires = () => async dispatch => {
   dispatch(requestQuestionnaires());

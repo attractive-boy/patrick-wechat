@@ -2,6 +2,7 @@ import {
   REQUEST_QUESTIONNAIRES,
   RECEIVE_QUESTIONNAIRES,
   ANSWER_QUESTION,
+  RECEIVE_ASSESSMENT,
 } from '../constants/actionType';
 
 const INITIAL_STATE = {
@@ -44,7 +45,12 @@ export default function questionnaires(state = INITIAL_STATE, action) {
         }),
       };
     }
-     default:
-       return state;
+     case RECEIVE_ASSESSMENT:
+      return {
+        ...state,
+        currentAssessment: action.payload
+      };
+    default:
+      return state;
   }
 }

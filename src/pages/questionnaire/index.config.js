@@ -1,4 +1,4 @@
 export default {
-  navigationBarTitleText: '填写问卷',
+  navigationBarTitleText: '测评',
   navigationBarBackgroundColor: '#FAFBFC',
 }
