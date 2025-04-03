@@ -29,7 +29,7 @@ export default {
             key: key,
             value: value
           })),
-          selectedIds: q.selectOption ? [parseInt(q.selectOption)] : [],
+          selectedIds: q.selectOption,
           single: true
         }))
       };
@@ -69,7 +69,7 @@ export default {
     }
   },
 
-  submitAnswer: async (assessmentId, questionId, answer) => {
+  submitAnswer: async (assessmentId, questionId, selectedOption) => {
     try {
       const response = await Taro.request({
         url: `${Taro.requestUrl}/accessment/submit-answer`,
@@ -80,7 +80,7 @@ export default {
         data: {
           assessmentId,
           questionId,
-          answer
+          selectedOption
         }
       });
 

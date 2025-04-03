@@ -5,6 +5,7 @@ import { View } from '@tarojs/components';
 import { AtProgress, AtButton } from 'taro-ui';
 import { Radio } from "@taroify/core";
 import { answer, complete, startAssessment } from '../../actions/questionnaires';
+import questionnairesApi from '../../api/questionnaires';
 import './index.scss';
 
 @connect(({ questionnaires }) => ({
@@ -15,7 +16,8 @@ class Questionnaire extends Component {
     questionnaireId: '',
     currentIndex: 0,
     assessmentId: '',
-    questions: []
+    questions: [],
+    selectedIds: []
   }
 
   componentDidMount() {
@@ -25,9 +27,23 @@ class Questionnaire extends Component {
     const id = parseInt(questionnaireId);
     this.setState({ questionnaireId: id });
     dispatch(startAssessment(id)).then(({ payload }) => {
+      // 初始化selectedIds，将字母选项转换为对应的数字
+      const selectedIds = payload.questions.map(question => {
+        if (question.selectedIds && question.selectedIds.length > 0) {
+          const letter = question.selectedIds[0].toString();
+          console.log("letter=>", letter);
+          return parseInt(letter.charCodeAt(0) - 64); // A->1, B->2, C->3
+        }
+        return '';
+      });
+      console.log("selectedIds=>", selectedIds);
+      const selctindex= selectedIds.findIndex(id => id == '');
+      console.log("seelctindex=>", selctindex);
       this.setState({
         assessmentId: payload.id,
-        questions: payload.questions
+        questions: payload.questions,
+        currentIndex: selctindex>=0? selctindex:0,
+        selectedIds
       });
     });
   }
@@ -38,20 +54,29 @@ class Questionnaire extends Component {
   }
 
   handleRadioSelect = selectedKey => {
-    const { currentIndex, questionnaireId } = this.state;
+    console.log("selectedKey=>", selectedKey);
+    const { currentIndex, questionnaireId, selectedIds } = this.state;
+    const convertToLetter = (num) => String.fromCharCode(64 + parseInt(num)); // 1->A, 2->B, 3->C
+    const letterKey = convertToLetter(selectedKey);
+    //设置选中的答案
+    selectedIds[currentIndex] = selectedKey;
+    this.setState({ selectedIds });
     const questions = this.getQuestions();
     const question = questions[currentIndex] || {};
     if (question.single) {
       const { dispatch } = this.props;
-      dispatch(answer(this.state.assessmentId, question.id, [selectedKey]));
-      if (currentIndex === questions.length - 1) {
-        Taro.showLoading();
-        dispatch(complete(this.state.assessmentId))
-          .then(() => Taro.hideLoading())
-          .then(() => Taro.redirectTo({ url: '/pages/result/index' }));
-      } else {
-        setTimeout(() => this.setState({ currentIndex: currentIndex + 1 }), 200);
-      }
+      questionnairesApi.submitAnswer(this.state.assessmentId, question.id, letterKey).then(() => {
+        if (currentIndex === questions.length - 1) {
+          Taro.showLoading();
+          dispatch(complete(this.state.assessmentId))
+            .then(() => Taro.hideLoading())
+            .then(() => Taro.redirectTo({ url: '/pages/result/index' }));
+        } else {
+          setTimeout(() => this.setState({ 
+            currentIndex: currentIndex + 1,
+          }), 200);
+        }
+      });
     }
   }
 
@@ -76,11 +101,10 @@ class Questionnaire extends Component {
   }
 
   render() {
-    const { currentIndex } = this.state;
+    const { currentIndex, selectedIds } = this.state;
     const questions = this.getQuestions();
     const question = questions[currentIndex] || {};
     const { title, options, single } = question;
-    const selectedIds = question.selectedIds || [];
     const radioOptions = (options || []).map(item => ({
       ...item,
       key: item.id,
@@ -104,16 +128,17 @@ class Questionnaire extends Component {
 
                     <View className='progress-text' style={{
                       fontSize: '24rpx',
-                      color: '#333',
+                      color: '#0078D4',
                       marginLeft: '20rpx',
-                    }}>{`${currentIndex + 1}/${questions.length}`}</View>
+                      
+                    }}>{`${currentIndex + 1}`}<View style={{color:'#333',display:'inline'}}>{`/${questions.length}`}</View></View>
                   </View>
                 </View>
                 <View className='title'>
                   {`${currentIndex + 1}、 ${title}`}
                 </View>
                 <View className='question'>
-                  <Radio.Group value={selectedIds[0]} onChange={this.handleRadioSelect}>
+                  <Radio.Group value={selectedIds[currentIndex]} onChange={this.handleRadioSelect}>
                     {radioOptions.map((item) => (
                       <Radio key={item.key} name={item.key}>{item.value}</Radio>
                     ))}

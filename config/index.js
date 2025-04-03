@@ -21,6 +21,11 @@ const config = {
   },
   framework: 'react',
   compiler: 'webpack5',
+  prebundle: {
+    enable: false, // 关闭预编译
+    exclude: ["taro-ui"], // 可选择性排除大型UI库
+    force: true // 强制刷新缓存
+  },
   cache: {
     enable: true // Webpack 持久化缓存配置，建议开启。默认配置请参考：https://docs.taro.zone/docs/config-detail#cache
   },
