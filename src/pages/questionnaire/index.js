@@ -69,8 +69,11 @@ class Questionnaire extends Component {
         if (currentIndex === questions.length - 1) {
           Taro.showLoading();
           dispatch(complete(this.state.assessmentId))
-            .then(() => Taro.hideLoading())
-            .then(() => Taro.redirectTo({ url: '/pages/result/index' }));
+            .then(() => {
+              Taro.hideLoading();
+              // 只传递assessmentId到结果页面
+              Taro.redirectTo({ url: `/pages/result/index?assessmentId=${this.state.assessmentId}` });
+            });
         } else {
           setTimeout(() => this.setState({ 
             currentIndex: currentIndex + 1,

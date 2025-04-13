@@ -58,6 +58,7 @@
     "@tarojs/shared": "3.6.35",
     "@tarojs/taro": "3.6.35",
     "classnames": "^2.5.1",
+    "echarts": "^5.6.0",
     "enhanced-resolve": "^5.12.0",
     "lodash": "4.17.15",
     "react": "^18.2.0",
@@ -66,6 +67,7 @@
     "redux": "^4.2.1",
     "redux-logger": "^3.0.6",
     "redux-thunk": "^3.1.0",
+    "taro-react-echarts": "^1.2.2",
     "taro-ui": "^3.1.0-beta.4"
   },
   "devDependencies": {

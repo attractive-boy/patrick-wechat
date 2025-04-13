@@ -21,6 +21,8 @@ export default function Upload() {
         windowHeight: 0
     });
 
+    const [isUnderReview, setIsUnderReview] = useState(false);
+
     useEffect(() => {
         const menuButton = Taro.getMenuButtonBoundingClientRect();
         const windowInfo = Taro.getWindowInfo();
@@ -44,6 +46,8 @@ export default function Upload() {
                 success: (res) => {
                     if (res.data.success && res.data.data) {
                         const userInfo = res.data.data;
+                        // 设置审核状态
+                        setIsUnderReview(userInfo.processStatus === '2');
                         // 生成临时编码用于图片签名
                         Taro.request({
                             url: `${Taro.requestUrl}/user/generateTempCode`,
@@ -333,8 +337,13 @@ export default function Upload() {
 
                         </View>
                         <View className='upload-btn-container'>
-                            
-                            <AtButton type='primary' className='upload-btn' onClick={handleSubmit}>确认上传</AtButton>
+                            <AtButton 
+                                type='primary' 
+                                className={`upload-btn ${isUnderReview ? 'under-review' : ''}`} 
+                                onClick={handleSubmit}
+                            >
+                                {isUnderReview ? '审核中' : '确认上传'}
+                            </AtButton>
                         </View>
                     </View>
                 </View>

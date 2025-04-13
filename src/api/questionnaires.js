@@ -98,8 +98,10 @@ export default {
 
   completeQuestionnaire: async (assessmentId) => {
     try {
-      const response = await Taro.request({
-        url: `${Taro.requestUrl}/accessment/complete`,
+
+      // 完成问卷后提交整个问卷
+      await Taro.request({
+        url: `${Taro.requestUrl}/accessment/submit-assessment`,
         method: 'POST',
         header: {
           'token': `${Taro.getStorageSync('token')}`
@@ -107,12 +109,7 @@ export default {
         data: { assessmentId }
       });
 
-      const { data } = response;
-      if (!data.success) {
-        throw new Error(data.message || '完成问卷失败');
-      }
-
-      return data.data;
+      return assessmentId;
     } catch (error) {
       console.error('完成问卷失败:', error);
       throw error;
