@@ -69,11 +69,42 @@ class Questionnaire extends Component {
         if (currentIndex === questions.length - 1) {
           Taro.showLoading();
           dispatch(complete(this.state.assessmentId))
-            .then(() => {
+            .then(async () => {
               Taro.hideLoading();
-              // 只传递assessmentId到结果页面
-              Taro.redirectTo({ url: `/pages/result/index?assessmentId=${this.state.assessmentId}` });
-            });
+              const fetchResultData = async () => {
+                try {
+                  const { router } = getCurrentInstance();
+                  const token = Taro.getStorageSync('token');
+                  const response = await Taro.request({
+                    url: `${Taro.requestUrl}/accessment/query-assessment-results?assessmentId=${this.state.assessmentId}`,
+                    method: 'GET',
+                    header: { 'token': token }
+                  });
+            
+                  if (response.data.success) {
+                    Taro.setStorageSync('resultData', response.data.data);
+                    console.log("response.data.data=>", response.data.data);
+
+                    // 只传递assessmentId到结果页面
+                    Taro.navigateTo({ url: `/pages/result/index` });
+
+                    
+                  } else {
+                    Taro.showToast({
+                      title: response.data.message || '获取结果失败',
+                      icon: 'none'
+                    });
+                  }
+                } catch (error) {
+                  console.error('获取结果失败:', error);
+                  Taro.showToast({
+                    title: '获取结果失败',
+                    icon: 'none'
+                  });
+                }
+              };
+              fetchResultData();    
+          });
         } else {
           setTimeout(() => this.setState({ 
             currentIndex: currentIndex + 1,

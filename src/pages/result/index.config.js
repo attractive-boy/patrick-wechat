@@ -1,7 +1,5 @@
 export default {
-  navigationBarTitleText: '结果',
+  navigationBarTitleText: '测评报告',
   enableShareAppMessage: true,
-  usingComponents: {
-    'chart-canvas': '../../components/chart-canvas/index',
-  },
+  usingComponents: {},
 }

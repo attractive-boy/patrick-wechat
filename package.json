@@ -10,6 +10,7 @@
     "framework": "React"
   },
   "scripts": {
+    "clean:cache": "del /s /q node_modules\\.cache\\* && del /s /q dist\\*",
     "build:weapp": "del /s /q dist\\* && set NODE_ENV=production && taro build --type weapp --watch",
     "build:swan": "taro build --type swan",
     "build:alipay": "taro build --type alipay",
@@ -58,7 +59,6 @@
     "@tarojs/shared": "3.6.35",
     "@tarojs/taro": "3.6.35",
     "classnames": "^2.5.1",
-    "echarts": "^5.6.0",
     "enhanced-resolve": "^5.12.0",
     "lodash": "4.17.15",
     "react": "^18.2.0",
