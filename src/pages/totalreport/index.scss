@@ -4,7 +4,10 @@
   color: #999;
   font-size: 32px;
 }
-
+.taroify-fixed-view {
+  background-color: white;
+  z-index: 99999; 
+ }
 .login-btn-container {
   margin-top: 60px;
   padding: 0 30px;
