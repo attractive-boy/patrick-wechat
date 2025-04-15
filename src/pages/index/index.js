@@ -5,7 +5,9 @@ import { View, Image, Text } from '@tarojs/components';
 import { AtButton, AtListItem, AtActivityIndicator, AtCurtain } from 'taro-ui';
 import { fetchQuestionnaires } from '../../actions/questionnaires';
 import './index.scss';
-import { VIEW } from '@tarojs/runtime';
+import { Navbar,ActionSheet } from "@taroify/core"
+import { SettingOutlined } from "@taroify/icons"
+import { BASE_API_URL } from '../../constants/common'
 
 export default function Index() {
   const [isOpened, setIsOpened] = useState(true);
@@ -140,9 +142,91 @@ export default function Index() {
       </View>
     </View>
   ));
+  const [open, setOpen] = useState(false)
+  const handleOption = () => {
+    setOpen(true)
+  };
+
+  const selectActionSheet = (action) => {
+    if (!action) {
+      setOpen(false);
+      return;
+    }
+    
+    if (action.value === 'totalreport') {
+      // 获取token
+      const token = Taro.getStorageSync('token');
+      if (!token) {
+        Taro.showToast({
+          title: '请先登录',
+          icon: 'none',
+          duration: 2000
+        });
+        return;
+      }
+      
+      // 显示加载提示
+      Taro.showLoading({
+        title: '加载中...',
+        mask: true
+      });
+      
+      // 发起请求获取用户总报告数据
+      Taro.request({
+        url: `${BASE_API_URL}/accessment/query-user-radar-map-data`,
+        method: 'GET',
+        header: {
+          'token': token
+        },
+        success: (res) => {
+          if (res.data.success) {
+            // 将数据存储到本地
+            Taro.setStorageSync('resultData', res.data.data);
+            // 跳转到总报告页面
+            Taro.navigateTo({ url: '/pages/totalreport/index' });
+          } else {
+            Taro.showToast({
+              title: res.data.message || '获取报告失败',
+              icon: 'none',
+              duration: 2000
+            });
+          }
+        },
+        fail: (err) => {
+          console.error('获取总报告失败:', err);
+          Taro.showToast({
+            title: '网络异常，请稍后再试',
+            icon: 'none',
+            duration: 2000
+          });
+        },
+        complete: () => {
+          Taro.hideLoading();
+        }
+      });
+    } else if (action.value === 'logout') {
+      // 清除用户登录信息
+      Taro.clearStorageSync();
+      Taro.showToast({
+        title: '已退出登录',
+        icon: 'success',
+        duration: 1500
+      });
+      // 跳转到登录页面
+      setTimeout(() => {
+        Taro.redirectTo({ url: '/pages/login/index' });
+      }, 1500);
+    }
+    setOpen(false);
+  };
 
   return (
     <View className='page'>
+      <Navbar nativeSafeTop={true} placeholder={true} safeArea="top" fixed={true}>
+        
+        <Navbar.Title>测评列表</Navbar.Title>
+        <Navbar.NavLeft icon={<SettingOutlined />} onClick={handleOption} />
+      </Navbar>
       <View className='doc-body bg'>
         <View className='panel'>
           {/* <View className='panel__title'>测评列表</View> */}
@@ -201,6 +285,18 @@ export default function Index() {
           </View> : null}
         </>
       </AtCurtain> 
+
+      <ActionSheet
+          actions={[
+            { name: "总报告", value: "totalreport" },
+            { name: "退出登录", value: "logout" },
+          ]}
+          cancelText="取消"
+          open={open}
+          onSelect={selectActionSheet}
+          onCancel={() => setOpen(false)}
+          onClose={() => setOpen(false)}
+        />
     </View>
   )
 }

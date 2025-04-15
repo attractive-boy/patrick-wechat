@@ -1,17 +1,27 @@
 import React, { useEffect, useState } from 'react';
-import { View } from '@tarojs/components';
+import { View, Text, Image } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import { getCurrentInstance } from '@tarojs/runtime';
 import './index.scss';
 import echarts from '../../assets/js/echarts.min.js';
 import Echarts from 'taro-react-echarts';
+import { Navbar } from "@taroify/core"
 export default function Result() {
-  const  resultData  = Taro.getStorageSync('resultData');
+  const resultData = Taro.getStorageSync('resultData');
+
+  const handleBackToHome = () => {
+    Taro.reLaunch({ url: '/pages/index/index' });
+  };
+
   return (
     <View style={{
       backgroundColor: '#F6F8FB',
     }}>
       <View className='login-page' style={{ background: `url(${Taro.imageUrl}/login_head_background.png) no-repeat`, backgroundSize: 'contain', backgroundPosition: 'top center', width: '100vw' }}>
+      <Navbar nativeSafeTop={true} placeholder={true} safeArea="top" fixed={true}>
+        <Navbar.NavLeft onClick={handleBackToHome}>返回</Navbar.NavLeft>
+        <Navbar.Title>测评报告</Navbar.Title>
+      </Navbar>
         <View style={{
           width: '100%',
           padding: '20rpx 20rpx',

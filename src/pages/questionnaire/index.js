@@ -86,7 +86,7 @@ class Questionnaire extends Component {
                     console.log("response.data.data=>", response.data.data);
 
                     // 只传递assessmentId到结果页面
-                    Taro.navigateTo({ url: `/pages/result/index` });
+                    Taro.redirectTo({ url: `/pages/result/index` });
 
                     
                   } else {
