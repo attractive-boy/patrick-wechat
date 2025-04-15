@@ -164,21 +164,27 @@ export default function Result() {
                     bottom: '3%',
                     containLabel: true
                   },
-                  xAxis: [
-                    {
-                      type: 'category',
-                      data: resultData ? resultData.levelData.map(item => item.name) : [],
-                      axisLabel: {
-                        rotate: 90,
-                        padding: [0, 0, 10, 0]
-                      }
+                  xAxis: [{
+                    type: 'category',
+                    data: resultData ? resultData.levelData.map(item => item.name) : [],
+                    axisLabel: {
+                      rotate: 90,
+                      padding: [0, 0, 10, 0]
+                    },
+                    name: '(维度)',
+                    nameLocation: 'end',
+                    nameTextStyle: {
+                      padding: [30, 0, 0, 0]
                     }
-                  ],
-                  yAxis: [
-                    {
-                      type: 'value'
+                  }],
+                  yAxis: [{
+                    type: 'value',
+                    name: '(等级)',
+                    nameLocation: 'end',
+                    nameTextStyle: {
+                      padding: [0, 0, 10, 0]
                     }
-                  ],
+                  }],
                   series: [
                     {
                       name: '达到等级',

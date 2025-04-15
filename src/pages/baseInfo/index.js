@@ -34,6 +34,10 @@ export default function Login() {
         setVisible(false);
     };
 
+    const handleDateCancel = () => {
+        setVisible(false);
+    };
+
     const [agePickerVisible, setAgePickerVisible] = useState(false);
     const ageColumns = useMemo(
         () => Array.from({length: 10}, (_, i) => ({
@@ -45,6 +49,10 @@ export default function Login() {
 
     const handleAgeConfirm = (value) => {
         handleChange(value, 'diagnosisAge');
+        setAgePickerVisible(false);
+    };
+
+    const handleAgeCancel = () => {
         setAgePickerVisible(false);
     };
 
@@ -343,8 +351,9 @@ export default function Login() {
                     title="选择诊断年龄"
                     columns={ageColumns}
                     open={agePickerVisible}
-                    onClose={() => setAgePickerVisible(false)}
+                    onClose={handleAgeCancel}
                     onConfirm={handleAgeConfirm}
+                    closeOnOverlayClick
                     style={{
                         position: 'fixed',
                         bottom: 0,
@@ -375,10 +384,11 @@ export default function Login() {
                 type="date"
                 value={currentDate}
                 open={visible}
-                onClose={() => setVisible(false)}
+                onClose={handleDateCancel}
                 onConfirm={handleDateConfirm}
                 min={new Date(1990, 0, 1)}
                 max={new Date()}
+                closeOnOverlayClick
                 style={{
                     position: 'fixed',
                     bottom: 0,

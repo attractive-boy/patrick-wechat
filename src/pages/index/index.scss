@@ -110,7 +110,10 @@
 
   
 }
-
+.taroify-fixed-view {
+  background-color: white;
+  z-index: 99999; 
+ }
 .myAtCurtain{
   .at-curtain__btn-close{
     display: none !important;
