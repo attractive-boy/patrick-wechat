@@ -47,6 +47,10 @@ export default function Upload() {
                             icon: 'success',
                             duration: 1500
                         });
+                        if (pollingTimer) {
+                            clearInterval(pollingTimer);
+                            setPollingTimer(null);
+                        }
                         setTimeout(() => {
                             Taro.redirectTo({
                                 url: '/pages/index/index'
@@ -135,17 +139,20 @@ export default function Upload() {
         if (token) {
             initUserData(); // 初始化用户数据
             // 设置轮询
-            const timer = setInterval(checkUserStatus, 1000); // 每10秒检查一次
+            const timer = setInterval(checkUserStatus, 10000); // 每10秒检查一次
             setPollingTimer(timer);
         }
+    }, []);
 
-        // 组件卸载时清除定时器
+    // 单独处理组件卸载时的清理
+    useEffect(() => {
         return () => {
             if (pollingTimer) {
                 clearInterval(pollingTimer);
+                setPollingTimer(null);
             }
         };
-    }, []);
+    }, [pollingTimer]);
 
     const contentHeight = windowInfo.windowHeight - (menuButtonInfo.top + menuButtonInfo.height + 40);
 
