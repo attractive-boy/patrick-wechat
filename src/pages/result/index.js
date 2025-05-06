@@ -28,54 +28,101 @@ export default function Result() {
           boxSizing: 'border-box',
         }}>
           <View style={{
-            fontSize: '28rpx',
-            color: '#222'
-          }}>您的测评结果如下：</View>
-          <View style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <Echarts
-              echarts={echarts}
-              option={{
-                color: ['#09A3FF'],
-                title: {},
-                legend: {},
-                radar: [{
-                  indicator: resultData ? resultData.radarMapData.map(item => ({
-                    text: item.name,
-                    max: 2
-                  })) : [],
-                  center: ['50%', '50%'],
-                  radius: 60,
-                  axisName: {
-                    color: '#fff',
-                    backgroundColor: '#666',
-                    borderRadius: 3,
-                    padding: [2, 3],
-                    fontSize: 10
-                  }
-                }],
-                series: [{
-                  type: 'radar',
-                  radarIndex: 0,
-                  data: [{
-                    value: resultData != null ? resultData.radarMapData.map(item => item.value) : [],
-                    areaStyle: {
-                      color: new echarts.graphic.RadialGradient(0.1, 0.6, 1, [
-                        {
-                          color: 'rgba(9, 163, 255, 0.50)',
-                          offset: 0
-                        },
-                        {
-                          color: 'rgba(9, 163, 255, 1)',
-                          offset: 1
-                        }
-                      ])
+            backgroundColor: '#fff',
+            borderRadius: '28rpx',
+            marginTop: '20rpx'
+          }}>
+            <View style={{
+              backgroundColor: '#09A3FF',
+              borderRadius: '28rpx 28rpx 0 0',
+              padding: '20rpx 20rpx',
+              fontSize: '30rpx',
+              color: '#fff',
+              fontWeight: 'bold',
+              textAlign: 'center'
+            }}>症状</View>
+            {resultData ? <View
+              style={{
+                padding: '20rpx 20rpx',
+              }}>
+              {resultData.interventionSuggestion.filter(item => item.value).map((item, index) => (
+                <View key={index} style={{
+                  marginBottom: '20rpx'
+                }}>
+                  <View style={{
+                    fontSize: '32rpx',
+                    color: 'black',
+                    fontWeight: 'bold',
+                    marginBottom: '10rpx'
+                  }}>({index + 1}){item.name}</View>
+                  <View style={{
+                    fontSize: '28rpx',
+                    color: '#666',
+                    lineHeight: '1.6'
+                  }}>{item.value}</View>
+                </View>
+              ))}
+            </View> : null}
+          </View>
+          <View style={{
+            backgroundColor: '#fff',
+            borderRadius: '28rpx',
+            marginTop: '20rpx'
+          }}>
+            <View style={{
+              backgroundColor: '#23B262',
+              borderRadius: '28rpx 28rpx 0 0',
+              padding: '20rpx 20rpx',
+              fontSize: '30rpx',
+              color: '#fff',
+              fontWeight: 'bold',
+              textAlign: 'center'
+            }}>均分可视化</View>
+            <View style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: 'transparent', }}>
+              <Echarts
+                echarts={echarts}
+                option={{
+                  color: ['#09A3FF'],
+                  title: {},
+                  legend: {},
+                  radar: [{
+                    indicator: resultData ? resultData.radarMapData.map(item => ({
+                      text: item.name,
+                      max: 2
+                    })) : [],
+                    center: ['50%', '50%'],
+                    radius: 60,
+                    axisName: {
+                      color: '#fff',
+                      backgroundColor: '#666',
+                      borderRadius: 3,
+                      padding: [2, 3],
+                      fontSize: 10
                     }
+                  }],
+                  series: [{
+                    type: 'radar',
+                    radarIndex: 0,
+                    data: [{
+                      value: resultData != null ? resultData.radarMapData.map(item => item.value) : [],
+                      areaStyle: {
+                        color: new echarts.graphic.RadialGradient(0.1, 0.6, 1, [
+                          {
+                            color: 'rgba(9, 163, 255, 0.50)',
+                            offset: 0
+                          },
+                          {
+                            color: 'rgba(9, 163, 255, 1)',
+                            offset: 1
+                          }
+                        ])
+                      }
+                    }]
                   }]
-                }]
-              }
-              }
-              style={{ width: '100%', height: '500rpx' }}
-            />
+                }}
+                style={{ width: '100%', height: '500rpx' }}
+              />
+            </View>
           </View>
           <View style={{
             border: '1px dashed #09A3FF',
@@ -146,7 +193,7 @@ export default function Result() {
               color: '#fff',
               fontWeight: 'bold',
               textAlign: 'center'
-            }}>发展等级可视化和测评报告</View>
+            }}>发展等级可视化</View>
             <View style={{ width: '100%', height: '800rpx',  display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
               <Echarts
                 echarts={echarts}
@@ -166,9 +213,15 @@ export default function Result() {
                   },
                   xAxis: [{
                     type: 'category',
-                    data: resultData ? resultData.levelData.map(item => item.name) : [],
+                    data: resultData ? resultData.levelData
+                      .filter(item => !['不能社交', '情绪障碍', '学习障碍'].includes(item.name))
+                      .map(item => item.name) : [],
                     axisLabel: {
-                      rotate: 90,
+                      //  让x轴文字方向为竖向
+                      interval: 0,
+                      formatter: function(value) {
+                        return value.split('').join('\n')
+                      },
                       padding: [0, 0, 10, 0]
                     },
                     name: '(维度)',
@@ -183,6 +236,11 @@ export default function Result() {
                     nameLocation: 'end',
                     nameTextStyle: {
                       padding: [0, 0, 10, 0]
+                    },
+                    axisLabel: {
+                      formatter: function(value) {
+                        return Math.floor(value);
+                      }
                     }
                   }],
                   series: [
@@ -193,29 +251,31 @@ export default function Result() {
                       emphasis: {
                         focus: 'series'
                       },
-                      // 颜色#09A3FF 
                       color: '#09A3FF',
-                      data: resultData ? resultData.levelData.map(item => item.acheiveLevel) : []
+                      data: resultData ? resultData.levelData
+                        .filter(item => !['不能社交', '情绪障碍', '学习障碍'].includes(item.name))
+                        .map(item => item.acheiveLevel) : []
                     },
                     {
                       name: '萌芽等级',
                       type: 'bar',
                       stack: 'Ad',
-                      //颜色 #9EE7FF
                       color: '#9EE7FF',
                       emphasis: {
                         focus: 'series'
                       },
-                      data: resultData ? resultData.levelData.map(item => {
-                        const potentialLevel = item.potentialLevel.split(',');
-                        const max = Math.max(...potentialLevel);
-                        const acheiveLevel = item.acheiveLevel;
-                        if (acheiveLevel < max) {
-                          return max;
-                        } else {
-                          return 0;
-                        }
-                      }) : []
+                      data: resultData ? resultData.levelData
+                        .filter(item => !['不能社交', '情绪障碍', '学习障碍'].includes(item.name))
+                        .map(item => {
+                          const potentialLevel = item.potentialLevel.split(',');
+                          const max = Math.max(...potentialLevel);
+                          const acheiveLevel = item.acheiveLevel;
+                          if (acheiveLevel < max) {
+                            return max;
+                          } else {
+                            return 0;
+                          }
+                        }) : []
                     }
                   ]
                 }}

@@ -17,7 +17,8 @@ class Questionnaire extends Component {
     currentIndex: 0,
     assessmentId: '',
     questions: [],
-    selectedIds: []
+    selectedIds: [],
+    isSubmitting: false
   }
 
   componentDidMount() {
@@ -66,46 +67,7 @@ class Questionnaire extends Component {
     if (question.single) {
       const { dispatch } = this.props;
       questionnairesApi.submitAnswer(this.state.assessmentId, question.id, letterKey).then(() => {
-        if (currentIndex === questions.length - 1) {
-          Taro.showLoading();
-          dispatch(complete(this.state.assessmentId))
-            .then(async () => {
-              Taro.hideLoading();
-              const fetchResultData = async () => {
-                try {
-                  const { router } = getCurrentInstance();
-                  const token = Taro.getStorageSync('token');
-                  const response = await Taro.request({
-                    url: `${Taro.requestUrl}/accessment/query-assessment-results?assessmentId=${this.state.assessmentId}`,
-                    method: 'GET',
-                    header: { 'token': token }
-                  });
-            
-                  if (response.data.success) {
-                    Taro.setStorageSync('resultData', response.data.data);
-                    console.log("response.data.data=>", response.data.data);
-
-                    // 只传递assessmentId到结果页面
-                    Taro.redirectTo({ url: `/pages/result/index` });
-
-                    
-                  } else {
-                    Taro.showToast({
-                      title: response.data.message || '获取结果失败',
-                      icon: 'none'
-                    });
-                  }
-                } catch (error) {
-                  console.error('获取结果失败:', error);
-                  Taro.showToast({
-                    title: '获取结果失败',
-                    icon: 'none'
-                  });
-                }
-              };
-              fetchResultData();    
-          });
-        } else {
+        if (currentIndex < questions.length - 1) {
           setTimeout(() => this.setState({ 
             currentIndex: currentIndex + 1,
           }), 200);
@@ -125,17 +87,89 @@ class Questionnaire extends Component {
   }
 
   handleNext = () => {
-    const { currentIndex, questions } = this.state;
+    const { currentIndex, questions, assessmentId, selectedIds, isSubmitting } = this.state;
     if (currentIndex === questions.length - 1) {
-      return;
+      // 如果正在提交中，直接返回
+      if (isSubmitting) {
+        return;
+      }
+
+      // 检查是否所有题目都已回答
+      const unansweredIndex = selectedIds.findIndex(id => id === '');
+      if (unansweredIndex !== -1) {
+        Taro.showToast({
+          title: '还有题目未回答，请完成所有题目',
+          icon: 'none',
+          duration: 2000
+        });
+        // 跳转到未回答的题目
+        this.setState({
+          currentIndex: unansweredIndex
+        });
+        return;
+      }
+
+      // 设置提交状态为true
+      this.setState({ isSubmitting: true });
+
+      // 所有题目都已回答，执行提交逻辑
+      Taro.showLoading();
+      this.props.dispatch(complete(assessmentId))
+        .then(async () => {
+          Taro.hideLoading();
+          const fetchResultData = async () => {
+            try {
+              const { router } = getCurrentInstance();
+              const token = Taro.getStorageSync('token');
+              const response = await Taro.request({
+                url: `${Taro.requestUrl}/accessment/query-assessment-results?assessmentId=${assessmentId}`,
+                method: 'GET',
+                header: { 'token': token }
+              });
+        
+              if (response.data.success) {
+                Taro.setStorageSync('resultData', response.data.data);
+                console.log("response.data.data=>", response.data.data);
+                Taro.redirectTo({ url: `/pages/result/index` });
+              } else {
+                Taro.showToast({
+                  title: response.data.message || '获取结果失败',
+                  icon: 'none'
+                });
+                // 提交失败时重置提交状态
+                this.setState({ isSubmitting: false });
+              }
+            } catch (error) {
+              console.error('获取结果失败:', error);
+              Taro.showToast({
+                title: '获取结果失败',
+                icon: 'none'
+              });
+              // 发生错误时重置提交状态
+              this.setState({ isSubmitting: false });
+            }
+          };
+          fetchResultData();    
+        })
+        .catch(error => {
+          console.error('提交失败:', error);
+          Taro.hideLoading();
+          Taro.showToast({
+            title: '提交失败',
+            icon: 'none'
+          });
+          // 发生错误时重置提交状态
+          this.setState({ isSubmitting: false });
+        });
+    } else {
+      this.setState({
+        currentIndex: currentIndex + 1,
+      });
     }
-    this.setState({
-      currentIndex: currentIndex + 1,
-    });
   }
 
   render() {
-    const { currentIndex, selectedIds } = this.state;
+    const { currentIndex, selectedIds, isSubmitting } = this.state;
     const questions = this.getQuestions();
     const question = questions[currentIndex] || {};
     const { title, options, single } = question;
@@ -190,7 +224,14 @@ class Questionnaire extends Component {
               }
               {
                 (currentIndex < questions.length) && (
-                  <AtButton type='primary' className={ currentIndex == 0 ? 'onelinebtn': 'halflinebtn' } onClick={this.handleNext}>{currentIndex ==  questions.length - 1 ? '提交' :'下一题'}</AtButton>
+                  <AtButton 
+                    type='primary' 
+                    className={ currentIndex == 0 ? 'onelinebtn': 'halflinebtn' } 
+                    onClick={this.handleNext}
+                    disabled={isSubmitting}
+                  >
+                    {currentIndex == questions.length - 1 ? (isSubmitting ? '提交中...' : '提交') : '下一题'}
+                  </AtButton>
                 )
               }
             </View>
