@@ -351,7 +351,7 @@ export default function Login() {
                     title="选择诊断年龄"
                     columns={ageColumns}
                     open={agePickerVisible}
-                    onClose={handleAgeCancel}
+                    onCancel={handleAgeCancel}
                     onConfirm={handleAgeConfirm}
                     closeOnOverlayClick
                     style={{
@@ -384,7 +384,7 @@ export default function Login() {
                 type="date"
                 value={currentDate}
                 open={visible}
-                onClose={handleDateCancel}
+                onCancel={handleDateCancel}
                 onConfirm={handleDateConfirm}
                 min={new Date(1990, 0, 1)}
                 max={new Date()}

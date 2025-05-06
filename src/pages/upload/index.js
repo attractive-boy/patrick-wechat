@@ -22,6 +22,102 @@ export default function Upload() {
     });
 
     const [isUnderReview, setIsUnderReview] = useState(false);
+    const [pollingTimer, setPollingTimer] = useState(null);
+
+    const checkUserStatus = () => {
+        const token = Taro.getStorageSync('token');
+        if (!token) return;
+
+        Taro.request({
+            url: `${Taro.requestUrl}/user/query-user-info`,
+            method: 'GET',
+            header: {
+                'token': token
+            },
+            success: (res) => {
+                if (res.data.success && res.data.data) {
+                    const userInfo = res.data.data;
+                    // 设置审核状态
+                    setIsUnderReview(userInfo.processStatus === '2');
+                    
+                    // 如果审核通过（假设processStatus === '3'表示审核通过）
+                    if (userInfo.processStatus === '0') {
+                        Taro.showToast({
+                            title: '审核已通过',
+                            icon: 'success',
+                            duration: 1500
+                        });
+                        setTimeout(() => {
+                            Taro.redirectTo({
+                                url: '/pages/index/index'
+                            });
+                        }, 1500);
+                    }
+                }
+            },
+            fail: (error) => {
+                console.error('获取用户信息失败:', error);
+            }
+        });
+    };
+
+    // 初始化用户数据
+    const initUserData = () => {
+        const token = Taro.getStorageSync('token');
+        if (!token) return;
+
+        Taro.request({
+            url: `${Taro.requestUrl}/user/query-user-info`,
+            method: 'GET',
+            header: {
+                'token': token
+            },
+            success: (res) => {
+                if (res.data.success && res.data.data) {
+                    const userInfo = res.data.data;
+                    // 设置审核状态
+                    setIsUnderReview(userInfo.processStatus === '2');
+                    
+                    // 生成临时编码用于图片签名
+                    Taro.request({
+                        url: `${Taro.requestUrl}/user/generateTempCode`,
+                        method: 'GET',
+                        header: {
+                            'token': token
+                        },
+                        success: (codeRes) => {
+                            if (codeRes.data.success && codeRes.data.data) {
+                                const tempCode = codeRes.data.data;
+                                // 处理图片路径，添加临时编码签名
+                                const profilePath = userInfo.profilePath ? 
+                                    `${Taro.requestUrl}/user/diagnosisBook/${tempCode}` : null;
+                                
+                                setFormData(prev => ({
+                                    fileName: userInfo.profilePath || '',
+                                    ageGroup: userInfo.ageGroup === '1' ? '3-7' : '7-12',
+                                    parentName: userInfo.parentName || '',
+                                    diagnosisImage: profilePath ? [profilePath] : []
+                                }));
+                            }
+                        },
+                        fail: (error) => {
+                            console.error('获取临时编码失败:', error);
+                            // 即使获取临时编码失败，也设置基本信息
+                            setFormData(prev => ({
+                                fileName: userInfo.profilePath || '',
+                                ageGroup: userInfo.ageGroup === '1' ? '3-7' : '7-12',
+                                parentName: userInfo.parentName || '',
+                                diagnosisImage: userInfo.profilePath ? [userInfo.profilePath] : []
+                            }));
+                        }
+                    });
+                }
+            },
+            fail: (error) => {
+                console.error('获取用户信息失败:', error);
+            }
+        });
+    };
 
     useEffect(() => {
         const menuButton = Taro.getMenuButtonBoundingClientRect();
@@ -37,57 +133,18 @@ export default function Upload() {
         // 获取用户信息
         const token = Taro.getStorageSync('token');
         if (token) {
-            Taro.request({
-                url: `${Taro.requestUrl}/user/query-user-info`,
-                method: 'GET',
-                header: {
-                    'token': token
-                },
-                success: (res) => {
-                    if (res.data.success && res.data.data) {
-                        const userInfo = res.data.data;
-                        // 设置审核状态
-                        setIsUnderReview(userInfo.processStatus === '2');
-                        // 生成临时编码用于图片签名
-                        Taro.request({
-                            url: `${Taro.requestUrl}/user/generateTempCode`,
-                            method: 'GET',
-                            header: {
-                                'token': token
-                            },
-                            success: (codeRes) => {
-                                if (codeRes.data.success && codeRes.data.data) {
-                                    const tempCode = codeRes.data.data;
-                                    // 处理图片路径，添加临时编码签名
-                                    const profilePath = userInfo.profilePath ? 
-                                        `${Taro.requestUrl}/user/diagnosisBook/${tempCode}` : null;
-                                    
-                                    setFormData(prev => ({
-                                        fileName: userInfo.profilePath || '',
-                                        ageGroup: userInfo.ageGroup === '1' ? '3-7' : '7-12',
-                                        parentName: userInfo.parentName || '',
-                                        diagnosisImage: profilePath ? [profilePath] : []
-                                    }));
-                                }
-                            },
-                            fail: (error) => {
-                                console.error('获取临时编码失败:', error);
-                                // 即使获取临时编码失败，也设置基本信息
-                                setFormData(prev => ({
-                                    fileName: userInfo.profilePath || '',
-                                    ageGroup: userInfo.ageGroup === '1' ? '3-7' : '7-12',
-                                    parentName: userInfo.parentName || '',
-                                    diagnosisImage: userInfo.profilePath ? [userInfo.profilePath] : []
-                                }));
-                            }
-                        });
-                    }
-                },
-                fail: (error) => {
-                    console.error('获取用户信息失败:', error);
-                }
-            });
+            initUserData(); // 初始化用户数据
+            // 设置轮询
+            const timer = setInterval(checkUserStatus, 1000); // 每10秒检查一次
+            setPollingTimer(timer);
         }
+
+        // 组件卸载时清除定时器
+        return () => {
+            if (pollingTimer) {
+                clearInterval(pollingTimer);
+            }
+        };
     }, []);
 
     const contentHeight = windowInfo.windowHeight - (menuButtonInfo.top + menuButtonInfo.height + 40);
@@ -180,9 +237,22 @@ export default function Upload() {
             return;
         }
 
-       
-        
-        // 提交个人信息和年龄段
+        if (isUnderReview) {
+            Taro.showModal({
+                title: '提示',
+                content: '确定覆盖审核记录吗？有可能需要重新审核',
+                success: (res) => {
+                    if (res.confirm) {
+                        submitForm();
+                    }
+                }
+            });
+        } else {
+            submitForm();
+        }
+    };
+
+    const submitForm = () => {
         const token = Taro.getStorageSync('token');
         Taro.request({
             url: `${Taro.requestUrl}/user/submit-profile-and-agegroup`,
@@ -198,22 +268,12 @@ export default function Upload() {
             },
             success: (res) => {
                 if (res.data.success) {
+                    setIsUnderReview(true);
                     Taro.showToast({
                         title: '提交成功',
                         icon: 'success',
                         duration: 1500
                     });
-                    setTimeout(() => {
-                        // Taro.redirectTo({
-                        //     url: '/pages/index/index'
-                        // });
-                        //提示审核中，不要跳转页面
-                        Taro.showToast({
-                            title: '审核中',
-                            icon:'none',
-                            duration: 1500
-                        });
-                    }, 1500);
                 } else {
                     Taro.showToast({
                         title: res.data.message || '提交失败',
@@ -340,7 +400,8 @@ export default function Upload() {
                             <AtButton 
                                 type='primary' 
                                 className={`upload-btn ${isUnderReview ? 'under-review' : ''}`} 
-                                onClick={handleSubmit}
+                                onClick={isUnderReview ? undefined : handleSubmit}
+                                disabled={isUnderReview}
                             >
                                 {isUnderReview ? '审核中' : '确认上传'}
                             </AtButton>

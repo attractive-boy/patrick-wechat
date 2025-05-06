@@ -133,7 +133,7 @@ export default function Result() {
               ))}
             </View> : null}
           </View>
-          <View style={{
+          {resultData.levelData?.filter(item => item.acheiveLevel > 0).length > 0 ? <View style={{
             backgroundColor: '#fff',
             borderRadius: '28rpx',
             marginTop: '20rpx'
@@ -221,8 +221,9 @@ export default function Result() {
                 }}
                 style={{ width: '100%', height: '800rpx' }}
               />
-            </View>
-            <View style={{
+            </View> 
+            </View> : null}
+            {resultData.interventionSuggestionLevel?.filter(item => item.value) > 0 ? <View style={{
               backgroundColor: '#fff',
               borderRadius: '28rpx',
               marginTop: '20rpx'
@@ -258,8 +259,8 @@ export default function Result() {
                   </View>
                 ))}
               </View> : null}
-            </View>
-            <View style={{
+            </View> : null}
+            { resultData.concernReverseInterventionSuggestion?.toString().length > 0 ? <View style={{
               backgroundColor: '#fff',
               borderRadius: '28rpx',
               marginTop: '20rpx'
@@ -290,11 +291,11 @@ export default function Result() {
                   </View>
 
               </View> : null}
-            </View>
+            </View> : null}
           </View>
         </View>
       </View>
-    </View>
+
   );
 }
 
