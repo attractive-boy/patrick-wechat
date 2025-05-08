@@ -15,6 +15,8 @@ export default function Login() {
         diagnosisResult: '',
         diagnosisLevel: '',
         diagnosisAge: '',
+        organizationName: '',
+        organizationType: '',
         agreement: false
     });
 
@@ -206,7 +208,9 @@ export default function Login() {
             sex: formData.gender,
             diagnosisResult: formData.diagnosisResult,
             diagnosis: formData.diagnosisLevel,
-            ageDiagnosis: parseInt(formData.diagnosisAge)
+            ageDiagnosis: parseInt(formData.diagnosisAge),
+            organizationName: formData.organizationName || '',
+            organizationType: formData.organizationType || ''
         };
 
         // 调用提交接口
@@ -371,8 +375,46 @@ export default function Login() {
                 />
             </View>
 
-            <View className='login-btn-container'>
+            <View style={{
+                borderRadius: '16rpx',
+                backgroundColor: '#fff',
+                boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+                padding: '30rpx',
+                margin: '20rpx',
+                fontSize: '28rpx',
+            }}>
+                <View style={{ marginBottom: '20rpx' }}>
+                    <Text style={{ fontSize: '30rpx', fontWeight: '500' }}>6、机构/学校/医院/幼儿园的名称</Text>
+                </View>
+                <AtInput
+                    name='organizationName'
+                    type='text'
+                    placeholder='请输入机构名称'
+                    value={formData.organizationName}
+                    onChange={(value) => handleChange(value, 'organizationName')}
+                />
+            </View>
 
+            <View style={{
+                borderRadius: '16rpx',
+                backgroundColor: '#fff',
+                boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+                padding: '30rpx',
+                margin: '20rpx',
+                fontSize: '28rpx',
+            }}>
+                <View style={{ marginBottom: '20rpx' }}>
+                    <Text style={{ fontSize: '30rpx', fontWeight: '500' }}>7、机构类型</Text>
+                </View>
+                <Radio.Group value={formData.organizationType} onChange={(value) => handleChange(value, 'organizationType')}>
+                    <Radio name="机构">机构</Radio>
+                    <Radio name="小学">小学</Radio>
+                    <Radio name="幼儿园">幼儿园</Radio>
+                    <Radio name="医院">医院</Radio>
+                </Radio.Group>
+            </View>
+
+            <View className='login-btn-container'>
                 <AtButton type='primary' className='login-btn' onClick={handleLogin}>确定</AtButton>
             </View>
             <View style={{
