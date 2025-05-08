@@ -14,104 +14,6 @@ export default function Result() {
     Taro.reLaunch({ url: '/pages/index/index' });
   };
 
-  const handleExportImage = () => {
-    Taro.showLoading({ title: '正在生成图片...' });
-    
-    // 获取页面内容
-    const query = Taro.createSelectorQuery();
-    query.select('.login-page')
-      .fields({
-        node: true,
-        size: true,
-        rect: true,
-        scrollOffset: true
-      })
-      .exec((res) => {
-        if (res[0]) {
-          const { node, width, height } = res[0];
-          
-          // 创建离屏 canvas
-          const canvas = Taro.createOffscreenCanvas({ type: '2d', width, height });
-          const ctx = canvas.getContext('2d');
-          
-          // 设置背景色
-          ctx.fillStyle = '#F6F8FB';
-          ctx.fillRect(0, 0, width, height);
-
-          // 将页面内容转换为图片
-          Taro.createSelectorQuery()
-            .select('.login-page')
-            .fields({
-              node: true,
-              size: true,
-            })
-            .exec((res) => {
-              if (res[0]) {
-                // 使用canvasToTempFilePath将页面内容转换为临时图片
-                Taro.canvasToTempFilePath({
-                  canvas: res[0].node,
-                  x: 0,
-                  y: 0,
-                  width: width,
-                  height: height,
-                  destWidth: width * 2,
-                  destHeight: height * 2,
-                  fileType: 'png',
-                  quality: 1,
-                  success: (tempRes) => {
-                    // 创建图片对象
-                    const img = canvas.createImage();
-                    img.src = tempRes.tempFilePath;
-                    img.onload = () => {
-                      // 将图片绘制到canvas
-                      ctx.drawImage(img, 0, 0, width, height);
-                      
-                      // 导出最终图片
-                      Taro.canvasToTempFilePath({
-                        canvas,
-                        x: 0,
-                        y: 0,
-                        width: width,
-                        height: height,
-                        destWidth: width * 2,
-                        destHeight: height * 2,
-                        fileType: 'png',
-                        quality: 1,
-                        success: (finalRes) => {
-                          // 保存图片到相册
-                          Taro.saveImageToPhotosAlbum({
-                            filePath: finalRes.tempFilePath,
-                            success: () => {
-                              Taro.hideLoading();
-                              Taro.showToast({ title: '保存成功', icon: 'success' });
-                            },
-                            fail: (err) => {
-                              Taro.hideLoading();
-                              Taro.showToast({ title: '保存失败', icon: 'error' });
-                              console.error('保存图片失败：', err);
-                            }
-                          });
-                        },
-                        fail: (err) => {
-                          Taro.hideLoading();
-                          Taro.showToast({ title: '生成图片失败', icon: 'error' });
-                          console.error('生成图片失败：', err);
-                        }
-                      });
-                    };
-                  },
-                  fail: (err) => {
-                    Taro.hideLoading();
-                    Taro.showToast({ title: '生成图片失败', icon: 'error' });
-                    console.error('生成图片失败：', err);
-                  }
-                });
-              }
-            });
-        }
-      });
-  };
-
   return (
     <View style={{
       backgroundColor: '#F6F8FB',
@@ -120,7 +22,6 @@ export default function Result() {
       <Navbar nativeSafeTop={true} placeholder={true} safeArea="top" fixed={true}>
         <Navbar.NavLeft onClick={handleBackToHome}>返回</Navbar.NavLeft>
         <Navbar.Title>测评报告</Navbar.Title>
-        <Navbar.NavRight onClick={handleExportImage}>导出</Navbar.NavRight>
       </Navbar>
         <View style={{
           width: '100%',
