@@ -330,7 +330,7 @@ export default function Upload() {
                                         className={`age-option ${formData.ageGroup === '3-7' ? 'active' : ''}`}
                                         onClick={() => handleChange('3-7', 'ageGroup')}
                                     >
-                                        3-7岁
+                                        3-6岁
                                     </View>
                                     <View
                                         className={`age-option ${formData.ageGroup === '7-12' ? 'active' : ''}`}

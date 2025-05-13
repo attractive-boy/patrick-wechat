@@ -266,7 +266,7 @@ export default function Result() {
                       emphasis: {
                         focus: 'series'
                       },
-                      color: '#09A3FF',
+                      color: 'rgba(9, 163, 255, 1)',
                       data: resultData ? resultData.levelData
                         .filter(item => !['不能社交', '情绪障碍', '学习障碍'].includes(item.name))
                         .map(item => item.acheiveLevel) : []
@@ -275,7 +275,7 @@ export default function Result() {
                       name: '萌芽等级',
                       type: 'bar',
                       stack: 'Ad',
-                      color: '#9EE7FF',
+                      color: 'rgba(9, 163, 255, 0.5)',
                       emphasis: {
                         focus: 'series'
                       },

@@ -31,9 +31,22 @@ export default function Login() {
         return `${year}-${month}-${day}`;
     };
 
+    const handleDateChange = (event) => {
+        console.log(event);
+        const date = new Date(event);
+        console.log(date);
+        if (!isNaN(date.getTime())) {
+            setCurrentDate(date);
+        }
+    };
+
     const handleDateConfirm = () => {
-        handleChange(formatDate(currentDate), 'birthDate');
-        setVisible(false);
+        const formattedDate = formatDate(currentDate);
+        console.log(formattedDate);
+        if (formattedDate) {
+            handleChange(formattedDate, 'birthDate');
+            setVisible(false);
+        }
     };
 
     const handleDateCancel = () => {
@@ -428,6 +441,7 @@ export default function Login() {
                 open={visible}
                 onCancel={handleDateCancel}
                 onConfirm={handleDateConfirm}
+                onChange={handleDateChange}
                 min={new Date(1990, 0, 1)}
                 max={new Date()}
                 closeOnOverlayClick
