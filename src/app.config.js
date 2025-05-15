@@ -1,14 +1,15 @@
 export default {
   pages: [
+
+    'pages/index/index',
     'pages/result/index',
     'pages/baseInfo/index',
-    'pages/index/index',
-
+    'pages/login/index',
 
 
     'pages/introduce/index',
     'pages/questionnaire/index',
-    'pages/login/index',
+    
 
     'pages/upload/index',
 

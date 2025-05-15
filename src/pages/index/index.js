@@ -23,7 +23,8 @@ export default function Index() {
   const checkToken = async () => {
     const token = Taro.getStorageSync('token');
     if (!token) {
-      Taro.redirectTo({ url: '/pages/login/index' });
+      setShowInfoPutBtn(false);
+      fetchDataCallback();
       return;
     }
 
@@ -220,6 +221,59 @@ export default function Index() {
     setOpen(false);
   };
 
+  const handleTotalReport = () => {
+    // 获取token
+    const token = Taro.getStorageSync('token');
+    if (!token) {
+      Taro.showToast({
+        title: '请先登录',
+        icon: 'none',
+        duration: 2000
+      });
+      return;
+    }
+    
+    // 显示加载提示
+    Taro.showLoading({
+      title: '加载中...',
+      mask: true
+    });
+    
+    // 发起请求获取用户总报告数据
+    Taro.request({
+      url: `${BASE_API_URL}/accessment/query-user-radar-map-data`,
+      method: 'GET',
+      header: {
+        'token': token
+      },
+      success: (res) => {
+        if (res.data.success) {
+          // 将数据存储到本地
+          Taro.setStorageSync('resultData', res.data.data);
+          // 跳转到总报告页面
+          Taro.navigateTo({ url: '/pages/totalreport/index' });
+        } else {
+          Taro.showToast({
+            title: res.data.message || '获取报告失败',
+            icon: 'none',
+            duration: 2000
+          });
+        }
+      },
+      fail: (err) => {
+        console.error('获取总报告失败:', err);
+        Taro.showToast({
+          title: '网络异常，请稍后再试',
+          icon: 'none',
+          duration: 2000
+        });
+      },
+      complete: () => {
+        Taro.hideLoading();
+      }
+    });
+  };
+
   return (
     <View className='page'>
       <Navbar nativeSafeTop={true} placeholder={true} safeArea="top" fixed={true}>
@@ -244,7 +298,7 @@ export default function Index() {
       <AtCurtain
         isOpened={isOpened}
         onClose={handleClose}
-        className={ showInfoPutBtn ? 'myAtCurtain' : null}
+        className={ showInfoPutBtn || !Taro.getStorageSync('token') ? 'myAtCurtain' : null}
       >
         <>
           <View
@@ -277,12 +331,16 @@ export default function Index() {
 
             <View style={{fontSize:'large',fontWeight:'bolder',width:'calc(90vw - 14vw)',textAlign:'center',position:'absolute',bottom:'5%'}}> 致家长的一封信 </View>
           </View>
-          {showInfoPutBtn ? <View className='button-container' style={{
+          <View className='button-container' style={{
             margin:"15vw",
             marginTop:"30rpx",
           }}>
-            <AtButton type='primary' className='start-btn' onClick={handleInfoPut}>维护基本信息</AtButton>
-          </View> : null}
+            {showInfoPutBtn ? (
+              <AtButton type='primary' className='start-btn' onClick={handleInfoPut}>维护基本信息</AtButton>
+            ) : !Taro.getStorageSync('token') ? (
+              <AtButton type='primary' className='start-btn' onClick={() => Taro.redirectTo({ url: '/pages/login/index' })}>登录系统</AtButton>
+            ) : null}
+          </View>
         </>
       </AtCurtain> 
 
@@ -297,6 +355,9 @@ export default function Index() {
           onCancel={() => setOpen(false)}
           onClose={() => setOpen(false)}
         />
+      <View className='total-report-btn'>
+        <AtButton type='primary' onClick={handleTotalReport}>查看总报告</AtButton>
+      </View>
     </View>
   )
 }

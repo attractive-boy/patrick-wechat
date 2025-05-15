@@ -55,9 +55,9 @@ export default function Login() {
 
     const [agePickerVisible, setAgePickerVisible] = useState(false);
     const ageColumns = useMemo(
-        () => Array.from({length: 10}, (_, i) => ({
-            label: `${i + 3}岁`,
-            value: (i + 3).toString()
+        () => Array.from({length: 12}, (_, i) => ({
+            label: `${i + 1}岁`,
+            value: (i + 1).toString()
         })),
         []
     );
