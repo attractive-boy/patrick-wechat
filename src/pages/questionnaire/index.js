@@ -18,7 +18,8 @@ class Questionnaire extends Component {
     assessmentId: '',
     questions: [],
     selectedIds: [],
-    isSubmitting: false
+    isSubmitting: false,
+    isAllCompleted: false
   }
 
   componentDidMount() {
@@ -40,11 +41,14 @@ class Questionnaire extends Component {
       console.log("selectedIds=>", selectedIds);
       const selctindex= selectedIds.findIndex(id => id == '');
       console.log("seelctindex=>", selctindex);
+      // 检查是否所有题目都已完成
+      const isAllCompleted = !selectedIds.some(id => id === '');
       this.setState({
         assessmentId: payload.id,
         questions: payload.questions,
         currentIndex: selctindex>=0? selctindex:0,
-        selectedIds
+        selectedIds,
+        isAllCompleted
       });
     });
   }
@@ -67,6 +71,22 @@ class Questionnaire extends Component {
     if (question.single) {
       const { dispatch } = this.props;
       questionnairesApi.submitAnswer(this.state.assessmentId, question.id, letterKey).then(() => {
+        //检查是否所有题目都已完成
+        const unansweredCount = selectedIds.filter(id => id === '').length;
+        if (unansweredCount === 0) {
+          if(!this.state.isAllCompleted){
+            //跳转到最后一个题目
+            this.setState({
+              currentIndex: questions.length - 1,
+              isAllCompleted: true
+            });
+          }
+        } else {
+          this.setState({
+            isAllCompleted: false
+          });
+        }
+        
         if (currentIndex < questions.length - 1) {
           setTimeout(() => this.setState({ 
             currentIndex: currentIndex + 1,
@@ -109,58 +129,67 @@ class Questionnaire extends Component {
         return;
       }
 
-      // 设置提交状态为true
-      this.setState({ isSubmitting: true });
-
-      // 所有题目都已回答，执行提交逻辑
-      Taro.showLoading();
-      this.props.dispatch(complete(assessmentId))
-        .then(async () => {
-          Taro.hideLoading();
-          const fetchResultData = async () => {
-            try {
-              const { router } = getCurrentInstance();
-              const token = Taro.getStorageSync('token');
-              const response = await Taro.request({
-                url: `${Taro.requestUrl}/accessment/query-assessment-results?assessmentId=${assessmentId}`,
-                method: 'GET',
-                header: { 'token': token }
-              });
-        
-              if (response.data.success) {
-                Taro.setStorageSync('resultData', response.data.data);
-                console.log("response.data.data=>", response.data.data);
-                Taro.redirectTo({ url: `/pages/result/index` });
-              } else {
+      // 添加确认对话框
+      Taro.showModal({
+        title: '确认提交',
+        content: '你确认提交吗？提交后就不能再修改。',
+        confirmText: '确认提交',
+        cancelText: '再想想',
+        success: (res) => {
+          if (res.confirm) {
+            // 用户点击确认，继续提交流程
+            this.setState({ isSubmitting: true });
+            Taro.showLoading();
+            this.props.dispatch(complete(assessmentId))
+              .then(async () => {
+                Taro.hideLoading();
+                const fetchResultData = async () => {
+                  try {
+                    const { router } = getCurrentInstance();
+                    const token = Taro.getStorageSync('token');
+                    const response = await Taro.request({
+                      url: `${Taro.requestUrl}/accessment/query-assessment-results?assessmentId=${assessmentId}`,
+                      method: 'GET',
+                      header: { 'token': token }
+                    });
+              
+                    if (response.data.success) {
+                      Taro.setStorageSync('resultData', response.data.data);
+                      console.log("response.data.data=>", response.data.data);
+                      Taro.redirectTo({ url: `/pages/result/index` });
+                    } else {
+                      Taro.showToast({
+                        title: response.data.message || '获取结果失败',
+                        icon: 'none'
+                      });
+                      // 提交失败时重置提交状态
+                      this.setState({ isSubmitting: false });
+                    }
+                  } catch (error) {
+                    console.error('获取结果失败:', error);
+                    Taro.showToast({
+                      title: '获取结果失败',
+                      icon: 'none'
+                    });
+                    // 发生错误时重置提交状态
+                    this.setState({ isSubmitting: false });
+                  }
+                };
+                fetchResultData();    
+              })
+              .catch(error => {
+                console.error('提交失败:', error);
+                Taro.hideLoading();
                 Taro.showToast({
-                  title: response.data.message || '获取结果失败',
+                  title: '提交失败',
                   icon: 'none'
                 });
-                // 提交失败时重置提交状态
+                // 发生错误时重置提交状态
                 this.setState({ isSubmitting: false });
-              }
-            } catch (error) {
-              console.error('获取结果失败:', error);
-              Taro.showToast({
-                title: '获取结果失败',
-                icon: 'none'
               });
-              // 发生错误时重置提交状态
-              this.setState({ isSubmitting: false });
-            }
-          };
-          fetchResultData();    
-        })
-        .catch(error => {
-          console.error('提交失败:', error);
-          Taro.hideLoading();
-          Taro.showToast({
-            title: '提交失败',
-            icon: 'none'
-          });
-          // 发生错误时重置提交状态
-          this.setState({ isSubmitting: false });
-        });
+          }
+        }
+      });
     } else {
       this.setState({
         currentIndex: currentIndex + 1,
