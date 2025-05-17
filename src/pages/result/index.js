@@ -203,7 +203,8 @@ export default function Result() {
                     trigger: 'axis',
                     axisPointer: {
                       type: 'shadow'
-                    }
+                    },
+                    
                   },
                   legend: {},
                   grid: {
@@ -263,10 +264,11 @@ export default function Result() {
                       name: '达到等级',
                       type: 'bar',
                       stack: 'Ad',
+                      barMaxWidth: '40%',
                       emphasis: {
                         focus: 'series'
                       },
-                      color: 'rgba(9, 163, 255, 1)',
+                      color: '#09A3FF',
                       data: resultData ? resultData.levelData
                         .filter(item => !['不能社交', '情绪障碍', '学习障碍'].includes(item.name))
                         .map(item => item.acheiveLevel) : []
@@ -275,7 +277,8 @@ export default function Result() {
                       name: '萌芽等级',
                       type: 'bar',
                       stack: 'Ad',
-                      color: 'rgba(9, 163, 255, 0.5)',
+                      barMaxWidth: '40%',
+                      color: '#9EE7FF',
                       emphasis: {
                         focus: 'series'
                       },
@@ -286,7 +289,7 @@ export default function Result() {
                           const max = Math.max(...potentialLevel);
                           const acheiveLevel = item.acheiveLevel;
                           if (acheiveLevel < max) {
-                            return max;
+                            return max - acheiveLevel;
                           } else {
                             return 0;
                           }

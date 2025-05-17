@@ -1,8 +1,8 @@
 export default {
   pages: [
-
-    'pages/index/index',
     'pages/result/index',
+    'pages/index/index',
+   
     'pages/baseInfo/index',
     'pages/login/index',
 

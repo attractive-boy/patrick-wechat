@@ -46,7 +46,7 @@ class Questionnaire extends Component {
       this.setState({
         assessmentId: payload.id,
         questions: payload.questions,
-        currentIndex: selctindex>=0? selctindex:0,
+        currentIndex: selctindex >= 0 ? selctindex : payload.questions.length - 1,
         selectedIds,
         isAllCompleted
       });
@@ -73,13 +73,18 @@ class Questionnaire extends Component {
       questionnairesApi.submitAnswer(this.state.assessmentId, question.id, letterKey).then(() => {
         //检查是否所有题目都已完成
         const unansweredCount = selectedIds.filter(id => id === '').length;
+        console.log("unansweredCount",unansweredCount)
+        console.log("questions.length",questions.length)
         if (unansweredCount === 0) {
+          console.log("isAllCompleted",this.state.isAllCompleted)
           if(!this.state.isAllCompleted){
+            console.log("跳转到最后一个题目",questions.length - 1)
             //跳转到最后一个题目
             this.setState({
               currentIndex: questions.length - 1,
               isAllCompleted: true
             });
+            return
           }
         } else {
           this.setState({
