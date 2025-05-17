@@ -204,7 +204,12 @@ export default function Result() {
                     axisPointer: {
                       type: 'shadow'
                     },
-                    
+                    formatter: function(params) {
+                      const achieveLevel = params[0].value;
+                      const potentialLevel = params[1].value;
+                      const totalLevel = achieveLevel + potentialLevel;
+                      return `${params[0].name}\n达到等级：${achieveLevel}\n萌芽等级：${totalLevel}`;
+                    }
                   },
                   legend: {},
                   grid: {
@@ -293,6 +298,26 @@ export default function Result() {
                           } else {
                             return 0;
                           }
+                        }) : []
+                    },
+                    {
+                      name: '最大等级',
+                      type: 'bar',
+                      stack: 'Ad',
+                      barMaxWidth: '40%',
+                      itemStyle: {
+                        borderColor: '#CCCCCC',
+                        borderWidth: 2,
+                        borderType: 'dashed',
+                        color: 'transparent'
+                      },
+                      data: resultData ? resultData.levelData
+                        .filter(item => !['不能社交', '情绪障碍', '学习障碍'].includes(item.name))
+                        .map(item => {
+                          const potentialLevel = item.potentialLevel.split(',');
+                          const max = Math.max(...potentialLevel);
+                          const acheiveLevel = item.acheiveLevel;
+                          return item.maxLevel - Math.max(acheiveLevel,max);
                         }) : []
                     }
                   ]
