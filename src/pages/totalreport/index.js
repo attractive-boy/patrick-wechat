@@ -109,7 +109,7 @@ export default function Result() {
               color: '#fff',
               fontWeight: 'bold',
               textAlign: 'center'
-            }}>干预建议</View>
+            }}>干预原则</View>
             {resultData ? <View
               style={{
                 padding: '20rpx 20rpx',

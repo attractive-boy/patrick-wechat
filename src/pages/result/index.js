@@ -28,7 +28,7 @@ export default function Result() {
           padding: '20rpx 20rpx',
           boxSizing: 'border-box',
         }}>
-          <View style={{
+          {resultData && resultData.showSymptom ? <View style={{
             backgroundColor: '#fff',
             borderRadius: '28rpx',
             marginTop: '20rpx'
@@ -64,7 +64,40 @@ export default function Result() {
                 </View>
               ))}
             </View> : null}
-          </View>
+          </View> : null}
+
+          { resultData.concernReverseInterventionSuggestion?.toString().length > 0 ? <View style={{
+              backgroundColor: '#fff',
+              borderRadius: '28rpx',
+              marginTop: '20rpx'
+            }}>
+              <View style={{
+                backgroundColor: '#09A3FF',
+                borderRadius: '28rpx 28rpx 0 0',
+                padding: '20rpx 20rpx',
+                fontSize: '30rpx',
+                color: '#fff',
+                fontWeight: 'bold',
+                textAlign: 'center'
+              }}>标准</View>
+              {resultData ? <View
+                style={{
+                  padding: '20rpx 20rpx',
+                }}>
+
+                  <View style={{
+                    marginBottom: '20rpx'
+                  }}>
+ 
+                    <View style={{
+                      fontSize: '28rpx',
+                      color: '#666',
+                      lineHeight: '1.6'
+                    }}>{resultData.concernReverseInterventionSuggestion}</View>
+                  </View>
+
+              </View> : null}
+            </View> : null}
           <View style={{
             backgroundColor: '#fff',
             borderRadius: '28rpx',
@@ -136,13 +169,13 @@ export default function Result() {
               fontSize: '34rpx',
               color: '#09A3FF',
               fontWeight: 'bold'
-            }}>温馨提示：</View>
+            }}>注：</View>
             <View style={{
               fontSize: '30rpx',
               color: '#666',
               marginTop: '10rpx'
-            }}>变化的是支持或干预策略，不变的是通用的干预原则。
-              建议您在阅读分量表报告前先阅读以下原则。</View>
+            }}>如果形状比较规则，表示数据在各个维度上相对均衡；如果形状不规则，表示某些维度较为突出或薄弱。突出部分为优势，凹进去部分为劣势。得分越高越好，均分≤1的维度是孩子的薄弱点，需要关注。
+</View>
           </View>
           <View style={{
             backgroundColor: '#fff',
@@ -157,7 +190,7 @@ export default function Result() {
               color: '#fff',
               fontWeight: 'bold',
               textAlign: 'center'
-            }}>干预建议</View>
+            }}>弱项干预建议</View>
             {resultData ? <View
               style={{
                 padding: '20rpx 20rpx',
@@ -181,7 +214,9 @@ export default function Result() {
               ))}
             </View> : null}
           </View>
-          {resultData.levelData?.filter(item => item.acheiveLevel > 0).length > 0 ? <View style={{
+          {resultData.levelData?.filter(item => item.acheiveLevel > 0).length > 0 ? 
+          <>
+          <View style={{
             backgroundColor: '#fff',
             borderRadius: '28rpx',
             marginTop: '20rpx'
@@ -393,7 +428,27 @@ export default function Result() {
                 style={{ width: '100%', height: '800rpx' }}
               />
             </View> 
-            </View> : null}
+            </View>
+            <View style={{
+              border: '1px dashed #09A3FF',
+              borderRadius: '8rpx',
+              padding: '20rpx',
+              marginTop: '20rpx',
+              backgroundColor: '#F3FEFF'
+            }}>
+              <View style={{
+                fontSize: '34rpx',
+                color: '#09A3FF',
+                fontWeight: 'bold'
+              }}>注：</View>
+              <View style={{
+                fontSize: '30rpx',
+                color: '#666',
+                marginTop: '10rpx'
+              }}>深蓝色为达到最高等级，表明孩子目前已达到最高水平。浅蓝色为达到等级，表明孩子目前达到的等级。淡蓝色为萌芽等级，指能力萌芽。萌芽等级是干预的契机，应作为目前重点干预内容，将萌芽变成经常性行为。虚框为未达等级，是未来努力方向。
+  </View>
+            </View>
+            </> : null}
             {resultData.interventionSuggestionLevel?.filter(item => item.value) > 0 ? <View style={{
               backgroundColor: '#fff',
               borderRadius: '28rpx',
@@ -407,7 +462,7 @@ export default function Result() {
                 color: '#fff',
                 fontWeight: 'bold',
                 textAlign: 'center'
-              }}>干预建议</View>
+              }}>“努力目标”建议</View>
               {resultData ? <View
                 style={{
                   padding: '20rpx 20rpx',
@@ -431,38 +486,7 @@ export default function Result() {
                 ))}
               </View> : null}
             </View> : null}
-            { resultData.concernReverseInterventionSuggestion?.toString().length > 0 ? <View style={{
-              backgroundColor: '#fff',
-              borderRadius: '28rpx',
-              marginTop: '20rpx'
-            }}>
-              <View style={{
-                backgroundColor: '#09A3FF',
-                borderRadius: '28rpx 28rpx 0 0',
-                padding: '20rpx 20rpx',
-                fontSize: '30rpx',
-                color: '#fff',
-                fontWeight: 'bold',
-                textAlign: 'center'
-              }}>干预建议</View>
-              {resultData ? <View
-                style={{
-                  padding: '20rpx 20rpx',
-                }}>
-
-                  <View style={{
-                    marginBottom: '20rpx'
-                  }}>
- 
-                    <View style={{
-                      fontSize: '28rpx',
-                      color: '#666',
-                      lineHeight: '1.6'
-                    }}>{resultData.concernReverseInterventionSuggestion}</View>
-                  </View>
-
-              </View> : null}
-            </View> : null}
+            
           </View>
         </View>
       </View>
