@@ -205,13 +205,54 @@ export default function Result() {
                       type: 'shadow'
                     },
                     formatter: function(params) {
-                      const achieveLevel = params[0].value;
-                      const potentialLevel = params[1].value;
+                      const achieveLevel = params[1].value;
+                      const potentialLevel = params[2].value;
                       const totalLevel = achieveLevel + potentialLevel;
                       return `${params[0].name}\n达到等级：${achieveLevel}\n萌芽等级：${totalLevel}`;
                     }
                   },
-                  legend: {},
+                  legend: {
+                    orient: 'horizontal',
+                    itemWidth: 15,
+                    itemGap: 10,
+                    selectedMode: false,
+                    textStyle: {
+                      fontSize: 10
+                    },
+                    data: [
+                      {
+                        name: '达到最高',
+                        icon: 'rect',
+                        itemStyle: {
+                          color: '#0066CC'
+                        }
+                      },
+                      {
+                        name: '达到等级',
+                        icon: 'rect',
+                        itemStyle: {
+                          color: '#09A3FF'
+                        }
+                      },
+                      {
+                        name: '萌芽等级',
+                        icon: 'rect',
+                        itemStyle: {
+                          color: '#9EE7FF'
+                        }
+                      },
+                      {
+                        name: '未达等级',
+                        icon: 'rect',
+                        itemStyle: {
+                          borderColor: '#CCCCCC',
+                          borderWidth: 2,
+                          borderType: 'dashed',
+                          color: 'transparent'
+                        }
+                      }
+                    ]
+                  },
                   grid: {
                     left: '3%',
                     right: '4%',
@@ -266,6 +307,21 @@ export default function Result() {
                   }],
                   series: [
                     {
+                      name: '达到最高',
+                      type: 'bar',
+                      stack: 'Ad',
+                      barMaxWidth: '40%',
+                      emphasis: {
+                        focus: 'series'
+                      },
+                      itemStyle: {
+                        color: '#0066CC'
+                      },
+                      data: resultData ? resultData.levelData
+                        .filter(item => !['不能社交', '情绪障碍', '学习障碍'].includes(item.name))
+                        .map(item => item.acheiveLevel === item.maxLevel ? item.acheiveLevel : 0) : []
+                    },
+                    {
                       name: '达到等级',
                       type: 'bar',
                       stack: 'Ad',
@@ -273,10 +329,12 @@ export default function Result() {
                       emphasis: {
                         focus: 'series'
                       },
-                      color: '#09A3FF',
+                      itemStyle: {
+                        color: '#09A3FF'
+                      },
                       data: resultData ? resultData.levelData
                         .filter(item => !['不能社交', '情绪障碍', '学习障碍'].includes(item.name))
-                        .map(item => item.acheiveLevel) : []
+                        .map(item => item.acheiveLevel === item.maxLevel ? 0 : item.acheiveLevel) : []
                     },
                     {
                       name: '萌芽等级',
@@ -301,11 +359,19 @@ export default function Result() {
                         }) : []
                     },
                     {
-                      name: '最大等级',
+                      name: '未达等级',
                       type: 'bar',
                       stack: 'Ad',
                       barMaxWidth: '40%',
                       itemStyle: {
+                        borderColor: '#CCCCCC',
+                        borderWidth: 2,
+                        borderType: 'dashed',
+                        color: 'transparent',
+                        borderTopWidth: 0
+                      },
+                      legendIcon: 'rect',
+                      legendItemStyle: {
                         borderColor: '#CCCCCC',
                         borderWidth: 2,
                         borderType: 'dashed',
@@ -317,7 +383,9 @@ export default function Result() {
                           const potentialLevel = item.potentialLevel.split(',');
                           const max = Math.max(...potentialLevel);
                           const acheiveLevel = item.acheiveLevel;
-                          return item.maxLevel - Math.max(acheiveLevel,max);
+                          const totalLevel = Math.max(acheiveLevel, max);
+                          const value = item.maxLevel - totalLevel;
+                          return value > 0 ? value : null;
                         }) : []
                     }
                   ]

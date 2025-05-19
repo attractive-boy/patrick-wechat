@@ -319,6 +319,8 @@ export default function Index() {
               position: 'relative',
             }}
           >
+            <View style={{fontSize:'large',fontWeight:'bolder',width:'calc(90vw - 14vw)',textAlign:'center',position:'absolute',bottom:'5%'}}> 家长答前须知 </View>
+
             <View style={{ marginBottom: '10rpx' }}>亲爱的家长：</View>
             
             <View style={{ textIndent: '2em' }}>
@@ -326,10 +328,10 @@ export default function Index() {
             </View>
             
             <View style={{ textIndent: '2em', marginTop: '20rpx' }}>
-              该测评可以反映孩子的优势和不足，测评后的干预建议则可为您后续针对性干预提供参考。测评结果的准确性和可靠性取决于<Text style={{ fontWeight: 'bold' }}>您（最熟悉孩子的家长填写）</Text>是否遵循要求认真如实完成所有作答。
+              该测评可以反映孩子的优势和不足，测评后的干预建议可为您后续针对性干预提供重点参考。测评结果的准确性和可靠性取决于<Text style={{ fontWeight: 'bold' }}>您（最熟悉孩子的家长填写）</Text>是否遵循要求认真如实完成所有作答。
             </View>
 
-            <View style={{fontSize:'large',fontWeight:'bolder',width:'calc(90vw - 14vw)',textAlign:'center',position:'absolute',bottom:'5%'}}> 致家长的一封信 </View>
+            
           </View>
           <View className='button-container' style={{
             margin:"15vw",
