@@ -230,7 +230,7 @@ export default function Upload() {
     const handleSubmit = () => {
         if (!formData.parentName) {
             Taro.showToast({
-                title: '请输入家长姓名',
+                title: '请输入家长/教师姓名',
                 icon: 'none'
             });
             return;
@@ -396,7 +396,7 @@ export default function Upload() {
                                     title='用户名'
                                     type='text'
                                     cursor={-1}
-                                    placeholder='请输入家长姓名'
+                                    placeholder='请输入家长/教师姓名'
                                     value={formData.parentName}
                                     onChange={value => handleChange(value, 'parentName')}
                                 />
