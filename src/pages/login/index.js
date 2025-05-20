@@ -169,7 +169,7 @@ export default function Login() {
 
         try {
             const response = await Taro.request({
-                url: `${BASE_API_URL}/user/wx-login?code=${e.detail.code}`,
+                url: `${BASE_API_URL}/user/wx-login?code=${e.detail.code}&name=${formData.username}`,
                 method: 'POST',
                 header: {
                     'Content-Type': 'application/json',
