@@ -2,8 +2,8 @@ export default {
   pages: [
 
     'pages/index/index',
+    'pages/totalreport/index',
     'pages/result/index',
-
    
     'pages/baseInfo/index',
     'pages/login/index',
@@ -15,7 +15,7 @@ export default {
 
     'pages/upload/index',
 
-    'pages/totalreport/index',
+
 
     
     

@@ -183,6 +183,7 @@ export default function Index() {
           if (res.data.success) {
             // 将数据存储到本地
             Taro.setStorageSync('resultData', res.data.data);
+            console.log(res.data.data);
             // 跳转到总报告页面
             Taro.navigateTo({ url: '/pages/totalreport/index' });
           } else {
@@ -358,7 +359,7 @@ export default function Index() {
           onClose={() => setOpen(false)}
         />
       <View className='total-report-btn'>
-        <AtButton type='primary' onClick={handleTotalReport}>查看总报告</AtButton>
+        <AtButton type='primary' onClick={handleTotalReport}>查看报告</AtButton>
       </View>
     </View>
   )
