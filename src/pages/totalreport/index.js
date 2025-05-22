@@ -9,6 +9,7 @@ import { Navbar } from "@taroify/core"
 
 export default function Result() {
   const resultData = Taro.getStorageSync('resultData');
+  console.log(resultData)
   const userInfo = Taro.getStorageSync('userInfo');
 
   const calculateAge = (birthday) => {
@@ -263,7 +264,7 @@ export default function Result() {
               fontSize: '30rpx',
               color: '#666',
               marginTop: '10rpx'
-            }}>如果形状比较规则，表示数据在各个维度上相对均衡；如果形状不规则，表示某些维度较为突出或薄弱。突出部分为优势，凹进去部分为劣势。得分越高越好，均分≤1的维度是孩子的薄弱点，需要关注。</View>
+            }}>{resultData.textOne}</View>
           </View>
 
 
@@ -284,8 +285,7 @@ export default function Result() {
               fontSize: '30rpx',
               color: '#666',
               marginTop: '10rpx'
-            }}>变化的是支持或干预策略，不变的是通用的干预原则。
-              </View>
+            }}>{resultData.textTwo}</View>
           </View>
 
           {/* 干预原则 */}
@@ -313,7 +313,10 @@ export default function Result() {
                   <View style={{
                     fontSize: '28rpx',
                     color: '#666',
-                    lineHeight: '1.6'
+                    lineHeight: '1.6',
+                    wordBreak: 'break-all',
+                    wordWrap: 'break-word',
+                    whiteSpace: 'pre-wrap'
                   }}>{resultData.textThree}</View>
                 </View>
             </View> : null}
