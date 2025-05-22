@@ -243,17 +243,9 @@ export default function Result() {
                 echarts={echarts}
                 option={{
                   tooltip: {
-                    trigger: 'axis',
-                    axisPointer: {
-                      type: 'shadow'
-                    },
-                    formatter: function(params) {
-                      const achieveLevel = params[1].value;
-                      const potentialLevel = params[2].value;
-                      const totalLevel = achieveLevel + potentialLevel;
-                      return `${params[0].name}\n达到等级：${achieveLevel}\n萌芽等级：${totalLevel}`;
-                    }
+                    show: false
                   },
+                  silent: true,
                   legend: {
                     orient: 'horizontal',
                     itemWidth: 15,
