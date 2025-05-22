@@ -11,6 +11,19 @@ export default function Result() {
   const resultData = Taro.getStorageSync('resultData');
   const userInfo = Taro.getStorageSync('userInfo');
 
+  const calculateAge = (birthday) => {
+    if (!birthday) return '未知';
+    const birthDate = new Date(birthday);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    return age;
+  };
+
   const handleBackToHome = () => {
     Taro.reLaunch({ url: '/pages/index/index' });
   };
@@ -54,19 +67,53 @@ export default function Result() {
               }}
             />
             <View style={{
-              fontSize: '32rpx',
-              color: '#666',
-              marginBottom: '30rpx'
-            }}>姓名：{userInfo?.name || '--'}</View>
-            <View style={{
-              fontSize: '32rpx',
-              color: '#666',
-              marginBottom: '30rpx'
-            }}>性别：{userInfo?.sex || '--'}</View>
-            <View style={{
-              fontSize: '32rpx',
-              color: '#666'
-            }}>测评日期：{resultData?.lastTestDate || '--'}</View>
+              margin: '0 auto',
+              width: 'fit-content'
+            }}>
+              <View style={{
+                fontSize: '32rpx',
+                color: '#666',
+                marginBottom: '30rpx',
+                display: 'flex',
+                alignItems: 'center'
+              }}>
+                <Text style={{ width: '150rpx' }}>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名</Text>
+                <Text style={{ width: '40rpx', textAlign: 'center' }}>:</Text>
+                <Text>{userInfo?.name || '--'}</Text>
+              </View>
+              <View style={{
+                fontSize: '32rpx',
+                color: '#666',
+                marginBottom: '30rpx',
+                display: 'flex',
+                alignItems: 'center'
+              }}>
+                <Text style={{ width: '150rpx' }}>性&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;别</Text>
+                <Text style={{ width: '40rpx', textAlign: 'center' }}>:</Text>
+                <Text>{userInfo?.sex || '--'}</Text>
+              </View>
+              <View style={{
+                fontSize: '32rpx',
+                color: '#666',
+                marginBottom: '30rpx',
+                display: 'flex',
+                alignItems: 'center'
+              }}>
+                <Text style={{ width: '150rpx' }}>年&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;龄</Text>
+                <Text style={{ width: '40rpx', textAlign: 'center' }}>:</Text>
+                <Text>{calculateAge(userInfo?.birthday)}岁</Text>
+              </View>
+              <View style={{
+                fontSize: '32rpx',
+                color: '#666',
+                display: 'flex',
+                alignItems: 'center'
+              }}>
+                <Text style={{ width: '150rpx' }}>测评日期</Text>
+                <Text style={{ width: '40rpx', textAlign: 'center' }}>:</Text>
+                <Text>{resultData?.lastTestDate || '--'}</Text>
+              </View>
+            </View>
           </View>
 
           {/* 报告导语 */}
@@ -217,6 +264,28 @@ export default function Result() {
               color: '#666',
               marginTop: '10rpx'
             }}>如果形状比较规则，表示数据在各个维度上相对均衡；如果形状不规则，表示某些维度较为突出或薄弱。突出部分为优势，凹进去部分为劣势。得分越高越好，均分≤1的维度是孩子的薄弱点，需要关注。</View>
+          </View>
+
+
+          <View style={{
+            border: '1px dashed #09A3FF',
+            borderRadius: '8rpx',
+            padding: '20rpx',
+            marginTop: '20rpx',
+            backgroundColor: '#F3FEFF',
+            marginBottom: '20rpx'
+          }}>
+            <View style={{
+              fontSize: '34rpx',
+              color: '#09A3FF',
+              fontWeight: 'bold'
+            }}>温馨提示：</View>
+            <View style={{
+              fontSize: '30rpx',
+              color: '#666',
+              marginTop: '10rpx'
+            }}>变化的是支持或干预策略，不变的是通用的干预原则。
+              </View>
           </View>
 
           {/* 干预原则 */}
