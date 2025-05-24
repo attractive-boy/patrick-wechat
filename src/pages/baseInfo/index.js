@@ -401,6 +401,7 @@ export default function Login() {
                 </View>
                 <AtInput
                     name='organizationName'
+                    cursor={-1}
                     type='text'
                     placeholder='请输入机构名称'
                     value={formData.organizationName}
