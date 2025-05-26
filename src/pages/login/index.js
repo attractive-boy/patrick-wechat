@@ -325,6 +325,18 @@ export default function Login() {
 
                 <View style={{ width: '100%' }}>
                     <View>
+                        <View style={{ 
+                            textAlign: 'center', 
+                            marginBottom: '40rpx',
+                            padding: '0 40rpx'
+                        }}>
+                            <Text style={{
+                                fontSize: '36rpx',
+                                fontWeight: 'bold',
+                                color: '#333',
+                                lineHeight: '1.5'
+                            }}>星跃孤独症儿童干预进阶测评</Text>
+                        </View>
                         <View className='logo-container' style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             <Image
                                 className='logo'
