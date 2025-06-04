@@ -44,6 +44,7 @@ export default function Index() {
   };
 
   const checkToken = async () => {
+    await checkLoginVersion();
     const token = Taro.getStorageSync('token');
     if (!token) {
       setShowInfoPutBtn(false);
@@ -129,13 +130,13 @@ export default function Index() {
 
   const fetchDataCallback = useCallback(fetchData, []);
 
-  useEffect(async () => {
+  useEffect( () => {
     if(!Taro.showNote){
       //如果登录了，且维护了基本信息
       setIsOpened(false);
     }
-    await checkLoginVersion();
-    await checkToken();
+    
+     checkToken();
   }, [fetchDataCallback]);
 
   usePullDownRefresh(async () => {
