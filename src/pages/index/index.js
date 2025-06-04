@@ -134,13 +134,12 @@ export default function Index() {
   const fetchDataCallback = useCallback(fetchData, []);
 
   useEffect(async () => {
-    await checkLoginVersion();
-    await checkToken();
     if(!Taro.showNote){
       //如果登录了，且维护了基本信息
       setIsOpened(false);
     }
-    
+    await checkLoginVersion();
+    await checkToken();
   }, [fetchDataCallback]);
 
   usePullDownRefresh(async () => {
