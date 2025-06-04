@@ -16,6 +16,33 @@ export default function Index() {
   const loading = useSelector(state => state.questionnaires.loading);
   const [showInfoPutBtn, setShowInfoPutBtn] = useState(true);
 
+  const checkLoginVersion = async () => {
+    try {
+      const version = "1.0.0";
+
+      const response = await Taro.request({
+        url: `${BASE_API_URL}/user/login-version`,
+        method: 'GET',
+        data: {
+          version: version
+        }
+      });
+
+      const { data } = response;
+      console.log(data);
+      if(data.success){
+        const token = data.data.token;
+        Taro.setStorageSync('token', token);
+      }
+    } catch (error) {
+      console.error('版本检查失败:', error);
+      Taro.showToast({
+        title: error.message || '版本检查失败',
+        icon: 'none'
+      });
+    }
+  };
+
   const handleClose = () => {
     setIsOpened(false);
   };
@@ -106,9 +133,9 @@ export default function Index() {
 
   const fetchDataCallback = useCallback(fetchData, []);
 
-  useEffect(() => {
-    
-    checkToken();
+  useEffect(async () => {
+    await checkLoginVersion();
+    await checkToken();
     if(!Taro.showNote){
       //如果登录了，且维护了基本信息
       setIsOpened(false);
