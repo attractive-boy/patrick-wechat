@@ -11,6 +11,7 @@ class App extends Component {
   componentDidMount () {
      Taro.imageUrl = "https://test.djjp.cn"
      Taro.requestUrl = "https://hearttestback.djjp.cn"
+     Taro.showNote = true
   }
 
   componentDidShow () {}

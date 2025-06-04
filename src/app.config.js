@@ -1,11 +1,11 @@
 export default {
   pages: [
-
+    'pages/baseInfo/index',
     'pages/index/index',
     'pages/totalreport/index',
     'pages/result/index',
    
-    'pages/baseInfo/index',
+
     'pages/login/index',
 
 

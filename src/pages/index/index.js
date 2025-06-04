@@ -106,6 +106,11 @@ export default function Index() {
   const fetchDataCallback = useCallback(fetchData, []);
 
   useEffect(() => {
+    if(Taro.showNote){
+      Taro.showNote = false;
+    }else{
+      setIsOpened(false);
+    }
     checkToken();
     
   }, [fetchDataCallback]);
@@ -299,7 +304,7 @@ export default function Index() {
       <AtCurtain
         isOpened={isOpened}
         onClose={handleClose}
-        className={ showInfoPutBtn || !Taro.getStorageSync('token') ? 'myAtCurtain' : null}
+        className={'myAtCurtain'}
       >
         <>
           <View
@@ -331,21 +336,19 @@ export default function Index() {
             <View style={{ textIndent: '2em', marginTop: '10rpx' }}>
               该测评可以反映孩子的优势和不足，测评后的干预建议可为您后续针对性干预提供重点参考。测评结果的准确性和可靠性取决于<Text style={{ fontWeight: 'bold' }}>您（最熟悉孩子的家长/教师填写）</Text>是否遵循要求认真如实完成所有作答。
             </View>
-
-            
           </View>
           <View className='button-container' style={{
             margin:"15vw",
             marginTop:"30rpx",
           }}>
             {showInfoPutBtn ? (
-              <AtButton type='primary' className='start-btn' onClick={handleInfoPut}>维护基本信息</AtButton>
+              <AtButton type='primary' className='start-btn' onClick={handleInfoPut}>填基本信息</AtButton>
             ) : !Taro.getStorageSync('token') ? (
               <AtButton type='primary' className='start-btn' onClick={() => Taro.redirectTo({ url: '/pages/login/index' })}>登录系统</AtButton>
-            ) : null}
+            ) : <AtButton type='primary' className='start-btn' onClick={handleClose}>开始测评</AtButton>}
           </View>
         </>
-      </AtCurtain> 
+      </AtCurtain>
 
       <ActionSheet
           actions={[
