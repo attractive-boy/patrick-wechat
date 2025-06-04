@@ -47,6 +47,7 @@ export default function Index() {
 
       if(userInfo.ageDiagnosis && userInfo.birthday && userInfo.diagnosis && userInfo.diagnosisResult && userInfo.sex){
         setShowInfoPutBtn(false);
+        Taro.showNote = false;
       }else{
         setShowInfoPutBtn(true);
       }
@@ -106,12 +107,12 @@ export default function Index() {
   const fetchDataCallback = useCallback(fetchData, []);
 
   useEffect(() => {
-    if(Taro.showNote){
-      Taro.showNote = false;
-    }else{
+    
+    checkToken();
+    if(!Taro.showNote){
+      //如果登录了，且维护了基本信息
       setIsOpened(false);
     }
-    checkToken();
     
   }, [fetchDataCallback]);
 

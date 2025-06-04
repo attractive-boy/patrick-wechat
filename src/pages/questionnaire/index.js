@@ -91,12 +91,6 @@ class Questionnaire extends Component {
             isAllCompleted: false
           });
         }
-        
-        if (currentIndex < questions.length - 1) {
-          setTimeout(() => this.setState({ 
-            currentIndex: currentIndex + 1,
-          }), 200);
-        }
       });
     }
   }

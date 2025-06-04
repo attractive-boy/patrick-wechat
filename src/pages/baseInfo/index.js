@@ -371,6 +371,7 @@ export default function Login() {
                     onCancel={handleAgeCancel}
                     onConfirm={handleAgeConfirm}
                     closeOnOverlayClick
+                    
                     style={{
                         position: 'fixed',
                         bottom: 0,
