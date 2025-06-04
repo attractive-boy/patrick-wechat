@@ -198,51 +198,62 @@ export default function Result() {
               textAlign: 'center'
             }}>测评结果</View>
             <View style={{ padding: '40rpx 30rpx' }}>
-              <View style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                <Echarts
-                  echarts={echarts}
-                  option={{
-                    color: ['#09A3FF'],
-                    title: {},
-                    legend: {},
-                    radar: [{
-                      indicator: resultData ? resultData.list.map(item => ({
-                        text: item.name,
-                        max: 2
-                      })) : [],
-                      center: ['50%', '50%'],
-                      radius: 60,
-                      axisName: {
-                        color: '#fff',
-                        backgroundColor: '#666',
-                        borderRadius: 3,
-                        padding: [2, 3],
-                        fontSize: 10
-                      }
-                    }],
-                    series: [{
-                      type: 'radar',
-                      radarIndex: 0,
-                      data: [{
-                        value: resultData != null ? resultData.list.map(item => item.value) : [],
-                        areaStyle: {
-                          color: new echarts.graphic.RadialGradient(0.1, 0.6, 1, [
-                            {
-                              color: 'rgba(9, 163, 255, 0.50)',
-                              offset: 0
-                            },
-                            {
-                              color: 'rgba(9, 163, 255, 1)',
-                              offset: 1
-                            }
-                          ])
+              {resultData && resultData.list && resultData.list.length > 0 ? (
+                <View style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                  <Echarts
+                    echarts={echarts}
+                    option={{
+                      color: ['#09A3FF'],
+                      title: {},
+                      legend: {},
+                      radar: [{
+                        indicator: resultData.list.map(item => ({
+                          text: item.name,
+                          max: 2
+                        })),
+                        center: ['50%', '50%'],
+                        radius: 60,
+                        axisName: {
+                          color: '#fff',
+                          backgroundColor: '#666',
+                          borderRadius: 3,
+                          padding: [2, 3],
+                          fontSize: 10
                         }
+                      }],
+                      series: [{
+                        type: 'radar',
+                        radarIndex: 0,
+                        data: [{
+                          value: resultData.list.map(item => item.value),
+                          areaStyle: {
+                            color: new echarts.graphic.RadialGradient(0.1, 0.6, 1, [
+                              {
+                                color: 'rgba(9, 163, 255, 0.50)',
+                                offset: 0
+                              },
+                              {
+                                color: 'rgba(9, 163, 255, 1)',
+                                offset: 1
+                              }
+                            ])
+                          }
+                        }]
                       }]
-                    }]
-                  }}
-                  style={{ width: '100%', height: '500rpx' }}
-                />
-              </View>
+                    }}
+                    style={{ width: '100%', height: '500rpx' }}
+                  />
+                </View>
+              ) : (
+                <View style={{
+                  textAlign: 'center',
+                  padding: '40rpx 0',
+                  color: '#666',
+                  fontSize: '28rpx'
+                }}>
+                  暂无测评数据
+                </View>
+              )}
             </View>
           </View>
 

@@ -21,7 +21,7 @@ export default function Index() {
       const version = "1.0.0";
 
       const response = await Taro.request({
-        url: `${BASE_API_URL}/user/login-version`,
+        url: `${Taro.requestUrl}/user/login-version`,
         method: 'GET',
         data: {
           version: version
@@ -36,10 +36,6 @@ export default function Index() {
       }
     } catch (error) {
       console.error('版本检查失败:', error);
-      Taro.showToast({
-        title: error.message || '版本检查失败',
-        icon: 'none'
-      });
     }
   };
 
