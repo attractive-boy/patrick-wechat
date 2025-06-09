@@ -18,7 +18,12 @@ export default function Index() {
 
   const checkLoginVersion = async () => {
     try {
-      const version = "1.0.0";
+      //检查是不是已经有token 
+      const token = Taro.getStorageSync('token');
+      if(token){
+        return;
+      }
+      const version = "2.0.0";
 
       const response = await Taro.request({
         url: `${Taro.requestUrl}/user/login-version`,

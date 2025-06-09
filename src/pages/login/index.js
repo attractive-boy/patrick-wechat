@@ -189,6 +189,7 @@ export default function Login() {
                     Taro.setStorageSync('token', userInfo.token);
                 }
                 Taro.setStorageSync('userInfo', userInfo);
+                Taro.showNote = true
                 
                 Taro.showToast({
                     title: '登录成功',
