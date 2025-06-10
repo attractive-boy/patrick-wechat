@@ -5,8 +5,8 @@ import { View, Image, Text } from '@tarojs/components';
 import { AtButton, AtListItem, AtActivityIndicator, AtCurtain } from 'taro-ui';
 import { fetchQuestionnaires } from '../../actions/questionnaires';
 import './index.scss';
-import { Navbar,ActionSheet } from "@taroify/core"
-import { SettingOutlined } from "@taroify/icons"
+import { Navbar, ActionSheet } from "@taroify/core"
+import { SettingOutlined, Down } from "@taroify/icons"
 import { BASE_API_URL } from '../../constants/common'
 
 export default function Index() {
@@ -365,6 +365,17 @@ export default function Index() {
             <View style={{ textIndent: '2em', marginTop: '10rpx' }}>
               该测评可以反映孩子的优势和不足，测评后的干预建议可为您后续针对性干预提供重点参考。测评结果的准确性和可靠性取决于<Text style={{ fontWeight: 'bold' }}>您（最熟悉孩子的家长/教师填写）</Text>是否遵循要求认真如实完成所有作答。
             </View>
+          </View>
+          <View style={{
+            display: 'flex',
+            justifyContent: 'center',
+            marginTop: '-10vw',
+            marginBottom: '5vw'
+          }}>
+            <Down style={{ 
+              fontSize: '100rpx',
+              color: '#09A3FF'  
+            }} />
           </View>
           <View className='button-container' style={{
             margin:"15vw",

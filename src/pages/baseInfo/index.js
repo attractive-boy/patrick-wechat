@@ -244,6 +244,7 @@ export default function Login() {
                     duration: 1500
                 });
                 setTimeout(() => {
+                    Taro.showNote = false
                     Taro.navigateTo({
                         url: '/pages/index/index',
                         success: () => {

@@ -222,7 +222,7 @@ export default function Result() {
               ))}
             </View> : null}
           </View> : null}
-          {resultData.levelData?.filter(item => item.acheiveLevel > 0).length > 0 ? 
+          {resultData.levelData?.filter(item => item.maxLevel > 0).length > 0 ? 
           <>
           <View style={{
             backgroundColor: '#fff',
