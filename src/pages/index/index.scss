@@ -69,11 +69,19 @@
                   -webkit-box-orient: vertical;
                   overflow: hidden;
                   margin-bottom: 16px;
+
+                  .time-notice {
+                    font-size: 26px;
+                    color: #666;
+                    margin-left: 8px;
+
+                    .highlight-month {
+                      color: #09A3FF;
+                      font-weight: bold;
+                      margin: 0 4px;
+                    }
+                  }
                 }
-                
-                
-                  
-                
               }
             }
           }

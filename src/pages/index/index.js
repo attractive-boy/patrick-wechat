@@ -164,13 +164,10 @@ export default function Index() {
         </View>
         <View className='card-info'>
           <View className='card-title'>{item.title}</View>
-          <View className='card-desc'>{item.description}</View>
+          <View className='card-desc'>{item.description}<Text className='time-notice'>(请根据孩子近<Text className='highlight-month'>1个月</Text>的情况选择)</Text></View>
         </View>
       </View>
       <View className='card-meta'>
-        <View className='card-meta__item time-notice-container'>
-          <Text className='time-notice'>请根据孩子近<Text className='highlight-month'>1个月</Text>的情况选择</Text>
-        </View>
         <View className='card-meta__item button-container'>
           <AtButton type='primary' className='start-btn' onClick={() => handleClick(item)}>开始测评</AtButton>
         </View>
@@ -354,16 +351,19 @@ export default function Index() {
               position: 'relative',
             }}
           >
-            <View style={{fontSize:'large',fontWeight:'bolder',width:'calc(90vw - 14vw)',textAlign:'center'}}> 家长/教师答前须知 </View>
+            <View style={{fontSize:'large',fontWeight:'bolder',width:'calc(90vw - 14vw)',textAlign:'center'}}>
+              <View>孤独症儿童核心症状改善和基本能力进阶评估</View>
+              <View>家长 / 教师答前须知</View>
+            </View>
 
-            <View style={{ marginBottom: '5rpx' }}>亲爱的家长/教师：</View>
+            <View style={{ marginBottom: '5rpx' }}>亲爱的家长 / 教师：</View>
             
             <View style={{ textIndent: '2em' }}>
-              非常感谢您参加孤独症谱系儿童症状和基本能力的调查！该调查可以帮助您了解孩子的目前症状或干预改善的进阶情况。您如实、认真地回答有助于全面了解孩子社交力、受限与重复行为、学习力、情绪力、生活自理力和运动力。
+              非常感谢您参加此次调查！该调查可以帮助您了解孩子的目前症状或干预改善的进阶情况。您如实、认真地回答有助于全面了解孩子社交力、受限与重复行为、学习力、情绪力、自理力和运动力。
             </View>
             
             <View style={{ textIndent: '2em', marginTop: '10rpx' }}>
-              该测评可以反映孩子的优势和不足，测评后的干预建议可为您后续针对性干预提供重点参考。测评结果的准确性和可靠性取决于<Text style={{ fontWeight: 'bold' }}>您（最熟悉孩子的家长/教师填写）</Text>是否遵循要求认真如实完成所有作答。
+              该测评可以反映孩子的优势和不足，测评后的干预建议可为您后续针对性干预提供重点参考。测评结果的准确性和可靠性取决于您（<Text style={{ fontWeight: 'bold' }}>最熟悉孩子的家长 / 教师填写</Text>）是否遵循要求认真如实完成所有作答。
             </View>
           </View>
           <View style={{
@@ -373,8 +373,9 @@ export default function Index() {
             marginBottom: '5vw'
           }}>
             <Down style={{ 
-              fontSize: '100rpx',
-              color: '#09A3FF'  
+              fontSize: '60rpx',
+              color: '#09A3FF',
+              fontWeight: 'bold'
             }} />
           </View>
           <View className='button-container' style={{
