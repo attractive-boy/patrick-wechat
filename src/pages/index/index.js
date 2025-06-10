@@ -169,6 +169,7 @@ export default function Index() {
       </View>
       <View className='card-meta'>
         <View className='card-meta__item button-container'>
+          <AtButton type='primary' className='start-btn' onClick={() => handleClick(item)}>查看历史报告</AtButton>
           <AtButton type='primary' className='start-btn' onClick={() => handleClick(item)}>开始测评</AtButton>
         </View>
       </View>

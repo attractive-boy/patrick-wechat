@@ -94,14 +94,43 @@
 .card-meta {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 12px;
   padding: 16px;
 
   &__item {
     display: flex;
-    justify-content: center;
+    justify-content: flex-end;
     align-items: center;
+    gap: 12px;
+
+    .button-container {
+      display: flex;
+      gap: 12px;
+    }
+
+    .start-btn {
+      width: auto;
+      min-width: 200rpx;
+      height: 66px;
+      line-height: 66px;
+      font-size: 32px;
+      border-radius: 44px;
+      border: none;
+      background: linear-gradient(to right, #B2E5FB, #09A3FF);
+    }
+
+    .history-btn {
+      width: auto;
+      min-width: 200rpx;
+      height: 66px;
+      line-height: 66px;
+      font-size: 32px;
+      border-radius: 44px;
+      background: #fff;
+      border: 2px solid #09A3FF;
+      color: #09A3FF;
+    }
   }
 
   .time-notice-container {
@@ -117,18 +146,19 @@
       }
     }
   }
-
-  
 }
+
 .taroify-fixed-view {
   background-color: white;
   z-index: 99999; 
- }
+}
+
 .myAtCurtain{
   .at-curtain__btn-close{
     display: none !important;
   }
 }
+
 .at-curtain__container{
   width: 100vw;
 }
