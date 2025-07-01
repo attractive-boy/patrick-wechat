@@ -156,6 +156,58 @@ export default function Index() {
 
   const handleClick = item => Taro.navigateTo({ url: `/pages/questionnaire/index?questionnaireId=${item.id}` });
 
+  const handleViewReport = async (item) => {
+    const token = Taro.getStorageSync('token');
+    if (!token) {
+      Taro.showToast({
+        title: '请先登录',
+        icon: 'none',
+        duration: 2000
+      });
+      return;
+    }
+
+    Taro.showLoading({
+      title: '加载中...',
+      mask: true
+    });
+
+    try {
+      const response = await Taro.request({
+        url: `${BASE_API_URL}/accessment/query-latest-assessment-results`,
+        method: 'GET',
+        header: {
+          'token': token
+        },
+        data: {
+          formId: item.id
+        }
+      });
+
+      if (response.data.success) {
+        // 将结果数据存储到本地
+        Taro.setStorageSync('resultData', response.data.data);
+        // 跳转到结果页面
+        Taro.navigateTo({ url: '/pages/result/index' });
+      } else {
+        Taro.showToast({
+          title: response.data.message || '获取报告失败',
+          icon: 'none',
+          duration: 2000
+        });
+      }
+    } catch (error) {
+      console.error('获取报告失败:', error);
+      Taro.showToast({
+        title: '网络异常，请稍后再试',
+        icon: 'none',
+        duration: 2000
+      });
+    } finally {
+      Taro.hideLoading();
+    }
+  };
+
   const questionnaireList = questionnaires.map(item => (
     <View key={item.id} className='questionnaire-card'>
       <View className='card-content'>
@@ -169,7 +221,7 @@ export default function Index() {
       </View>
       <View className='card-meta'>
         <View className='card-meta__item button-container'>
-          <AtButton type='primary' className='start-btn' onClick={() => handleClick(item)}>查看历史报告</AtButton>
+          <AtButton type='primary' className='start-btn' onClick={() => handleViewReport(item)}>查看报告</AtButton>
           <AtButton type='primary' className='start-btn' onClick={() => handleClick(item)}>开始测评</AtButton>
         </View>
       </View>
@@ -404,7 +456,7 @@ export default function Index() {
           onClose={() => setOpen(false)}
         />
       <View className='total-report-btn'>
-        <AtButton type='primary' onClick={handleTotalReport}>查看报告</AtButton>
+        <AtButton type='primary' onClick={handleTotalReport}>查看总报告</AtButton>
       </View>
     </View>
   )

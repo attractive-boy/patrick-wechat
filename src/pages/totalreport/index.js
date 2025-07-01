@@ -332,6 +332,19 @@ export default function Result() {
                 </View>
             </View> : null}
           </View>
+
+          {/* 底部提示 */}
+          <View style={{
+            textAlign: 'center',
+            padding: '40rpx 0',
+            marginBottom: '40rpx'
+          }}>
+            <Text style={{
+              fontSize: '36rpx',
+              color: '#09A3FF',
+              fontWeight: 'bold'
+            }}>具体干预建议见分报告</Text>
+          </View>
         </View>
       </View>
     </View>
